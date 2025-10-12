@@ -1,0 +1,123 @@
+/* Page background */
+body {
+  background: #f3f4f6;
+}
+
+/* Mobile frame */
+.appSim {
+  width: 390px;
+  min-height: 780px;
+  margin: 24px auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 30px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+.header-title {
+  font-weight: 600;           
+}
+
+/* Main content area */
+.content {
+  padding: 18px;
+}
+.page-greeting {
+  margin-bottom: 12px;
+}
+.muted-note {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.card-block {
+  margin-bottom: 16px;
+}
+
+/* Form spacing */
+.form-field {
+  margin-bottom: 12px;
+}
+
+/* Bottom nav */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 12px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+.bottom-nav-actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+/* Profile card */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.profile-text { display: flex; flex-direction: column; }
+.profile-name { font-weight: 600; margin-bottom: 2px; }
+.profile-email { color: #6c757d; font-size: 0.9rem; }
+
+.list {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 16px 0;
+  background: #fff;
+}
+.list-item {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.list-item + .list-item { border-top: 1px solid #eee; }
+
+.label { color: #6c757d; font-size: 0.85rem; }
+.value { font-size: 1rem; }
+
+.btn-full { width: 100%; }
+.logout { margin-top: 8px; }
+
+.auth-foot {
+  text-align: center;      /* text-center */
+  font-size: 0.875rem;     /* small */
+  margin-top: 1rem;        /* mt-3 (~16px) */
+  margin-bottom: 0;        /* mb-0 */
+  color: #6c757d;          /* muted text */
+}
+
+.auth-foot-link {
+  color: #0d6efd;          /* match Bootstrap primary */
+  text-decoration: none;
+}
