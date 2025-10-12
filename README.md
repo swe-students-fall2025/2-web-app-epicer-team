@@ -8,12 +8,11 @@ For budget-minded shoppers, we want to create a comparison app that builds the c
 
 ## User stories
 
-See instructions. Delete this line and place a link to the user stories here.
+[Issues page](https://github.com/swe-students-fall2025/2-web-app-epicer-team/issues)
 
 ## Steps necessary to run the software
 
 See instructions. Delete this line and place instructions to download, configure, and run the software here.
 
 ## Task boards
-
-See instructions. Delete this line and place a link to the task boards here.
+[Sprint 1](https://github.com/orgs/swe-students-fall2025/projects/15)
