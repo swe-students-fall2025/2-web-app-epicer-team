@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Store 1",
+    "location": {
+      "city": "New York",
+      "state": "NY",
+      "country": "USA",
+      "coordinates": { "lat": 12.3456, "lng": -12.3456 }
+    },
+    "average_rating": 1.2,
+    "num_ratings": 34
+  },
+  {
+    "name": "Store 2",
+    "location": {
+      "city": "Brooklyn",
+      "state": "NY",
+      "country": "USA",
+      "coordinates": { "lat": -12.3456, "lng": -12.3456 }
+    },
+    "average_rating": 2.3,
+    "num_ratings": 45
+  },
+  {
+    "name": "Store 3",
+    "location": {
+      "city": "Bronx",
+      "state": "NY",
+      "country": "USA",
+      "coordinates": { "lat": -12.3456, "lng": 12.3456 }
+    },
+    "average_rating": 3.4,
+    "num_ratings": 56
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "username": "user1",
+    "store_name": "Store 1",
+    "image_url": "https://cdn.app/uploads/receipt_walmart_01.jpg",
+    "proof_for": [
+      { "product_name": "Whole Milk", "price": 3.49, "quantity": 1 },
+      { "product_name": "Bananas", "price": 1.29, "quantity": 1 }
+    ],
+    "uploaded_at": "2025-10-12T09:00:00Z"
+  },
+  {
+    "username": "user2",
+    "store_name": "Store 2",
+    "image_url": "https://cdn.app/uploads/receipt_wholefoods_01.jpg",
+    "status": "pending",
+    "proof_for": [],
+    "uploaded_at": "2025-10-12T09:30:00Z"
+  }
+]
