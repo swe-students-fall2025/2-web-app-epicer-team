@@ -17,14 +17,14 @@
       <h1 class="h5 mb-3">Welcome back</h1>
       <!-- <form action="/profile/update" method="post" novalidate> -->
     <!-- temporarily use get until back end-->
-      <form action="home.html" method="get" novalidate>
+      <form action="{{ url_for('login') }}" method="post" novalidate>
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input type="email" class="form-control" placeholder="you@example.com" required>
+          <input type="email" class="form-control" name = "email" placeholder="you@example.com" required>
         </div>
         <div class="mb-2">
           <label class="form-label">Password</label>
-          <input type="password" class="form-control" placeholder="••••••••" required>
+          <input type="password" class="form-control" name = "password" placeholder="••••••••" required>
         </div>
         <button type="submit" class="btn btn-primary w-100">Log In</button>
       </form>
