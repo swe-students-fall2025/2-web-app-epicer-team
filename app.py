@@ -10,8 +10,16 @@ from models import User
 load_dotenv()
 login_manager = LoginManager()
 
+mongo_user = os.getenv("MONGO_USER")
+mongo_pass = os.getenv("MONGO_PASS")
+mongo_host = os.getenv("MONGO_HOST")
+mongo_port = os.getenv("MONGO_PORT")
+mongo_db = os.getenv("MONGO_DB")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 def create_app():
     app = Flask(__name__)
+    app.secret_key = SECRET_KEY
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
@@ -20,9 +28,9 @@ def create_app():
     def load_user(user_id):
         db_user = db.users.find_one({"_id": ObjectId(user_id)})
         return User(db_user)
-
-    cxn = pymongo.MongoClient(os.getenv("MONGO_URI"))
-    db = cxn[os.getenv("MONGO_DBNAME")]
+    mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
+    cxn = pymongo.MongoClient(mongo_uri)
+    db = cxn[mongo_db]
     # check if connected to database
     try:
         cxn.admin.command("ping")
@@ -32,7 +40,7 @@ def create_app():
     
     @app.route("/")
     def show_home():
-        return render_template("home.html")
+        return render_template("pages/home.html")
     
     # i'm still working on how to use hash here
     @app.route('/login', methods=['GET', 'POST'])
@@ -43,29 +51,31 @@ def create_app():
 
             if not email or not password:
                 print("Please fill in both fields!")
-                return render_template("login.html")
+                return render_template("pages/login.html")
             
             db_email = db.users.find_one({"email": email})
             # no such user
             if not db_email:
                 print("Email not registered.")
-                return render_template("login.html")
+                return render_template("pages/login.html")
             
             if db_email["password"] == password:
-                user = User(db_email["username"])
+                user = User(db_email)
                 login_user(user)
                 flash('Logged in successfully.')
-                return redirect(url_for("profile"), user = user)
+                return redirect(url_for("profile", user = user))
             else:
                 print("Wrong password!")
-                return render_template("login.html")
-        return render_template("login.html")
+                return render_template("pages/login.html")
+        return render_template("pages/login.html")
     
     @app.route("/logout")
     @login_required
     def logout():
+        print("Before logout", current_user.is_authenticated)
         logout_user()
-        return redirect(url_for("home"))
+        print("After logout", current_user.is_authenticated)
+        return redirect(url_for("show_home"))
 
     @app.route('/register', methods = ['GET', 'POST'])
     def register():
@@ -76,16 +86,16 @@ def create_app():
 
             if not username or not email or not password:
                 print("Please fill in all fields!")
-                return render_template("register.html")
+                return render_template("pages/register.html")
             
             db_user = db.users.find_one({"username": username}) # since we have email maybe allow same username?
             db_email = db.users.find_one({"email": email})
             if db_user:
                 print("Username already exists!")
-                return render_template("register.html")
+                return render_template("pages/register.html")
             elif db_email:
                 print("Email already registered!")
-                return render_template("register.html")
+                return render_template("pages/register.html")
             
             new_user = ({
                 "username": username,
@@ -95,18 +105,18 @@ def create_app():
             db.users.insert_one(new_user)
 
             return redirect(url_for("profile"), user = User(db_user))
-        return render_template("register.html")
+        return render_template("pages/register.html")
     
     @app.route("/profile")
     @login_required
     def profile():
-        return render_template("profile.html", user = current_user)
+        return render_template("pages/profile.html", user = current_user)
     
     @app.route("/edit_profile", methods = ["GET", "POST"])# not sure about the name
     @login_required
     def edit_profile():
         #do stuff (not sure what we plan to do here?)
-        return render_template("edit_profile.html", user = current_user)
+        return render_template("pages/edit_profile.html", user = current_user)
     
     @app.route("/profile", methods = ["POST"])
     @login_required
@@ -121,13 +131,13 @@ def create_app():
         if not store:
             #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("store.html", store = store)
+        return render_template("pages/store.html", store = store)
     
     @app.route("/store/<sid>", methods = ["POST"])
     @login_required
     def rating_s():
         # do stuff
-        return render_template("store.html", store = store)
+        return render_template("pages/store.html", store = store)
     
     @app.route("/product/<product_id>")
     def product(product_id):
@@ -135,13 +145,13 @@ def create_app():
         if not product:
             #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("product.html", product = product)
+        return render_template("pages/product.html", product = product)
     
     @app.route("/product/<product_id>", methods = ["POST"])
     @login_required
     def rating_p():
         # do stuff
-        return render_template("product.html", product = product)
+        return render_template("pages/product.html", product = product)
     
     # I feel like we should do a rating handler and implement it in both for product and store instead of doing the same logic twice
     
@@ -157,14 +167,14 @@ def create_app():
 
         if not result:
             print("Sorry, we don't have what you're looking for.")
-            return render_template("search.html")
+            return render_template("pages/search.html")
         
-        return render_template("search.html", input = input, result = result)
+        return render_template("pages/search.html", input = input, result = result)
     
     @app.route("/filter")
     def filter():
         # do stuff
-        return render_template("search.html")
+        return render_template("pages/search.html")
     
     # something's wrong with this one I still need to figure it out
     @app.route("/upload",  methods = ["GET", "POST"]) 
@@ -199,13 +209,14 @@ def create_app():
 
             return redirect(url_for("search"))
 
-        return render_template("upload.html")
-
-    app = create_app()
+        return render_template("pages/upload.html")
     
-    if __name__ == "__main__":
-        FLASK_PORT = os.getenv("FLASK_PORT", "5000")
-        FLASK_ENV = os.getenv("FLASK_ENV")
-        print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
+    return app
 
-        app.run(port=FLASK_PORT)
+app = create_app()
+if __name__ == "__main__":
+    FLASK_PORT = os.getenv("FLASK_PORT", "5000")
+    FLASK_ENV = os.getenv("FLASK_ENV")
+    print(f"FLASK_ENV: {FLASK_ENV}, FLASK_PORT: {FLASK_PORT}")
+
+    app.run(port=FLASK_PORT, debug=True)
