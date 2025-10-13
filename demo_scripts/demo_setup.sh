@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 if [ -f .env ]; then
@@ -12,7 +12,7 @@ fi
 CONTAINER_NAME="mongodb_dockerhub"
 IMAGE_NAME="mongo:latest"
 DB_NAME=${MONGO_DB:-grocery_demo}
-DEMO_DATA_DIR="./demo_data"
+DEMO_DATA_DIR="./demo_scripts/demo_data"
 
 # === SUDO IN CASE ===
 DOCKER_CMD="docker"
