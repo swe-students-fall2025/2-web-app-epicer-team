@@ -8,7 +8,8 @@
       "coordinates": { "lat": 12.3456, "lng": -12.3456 }
     },
     "average_rating": 1.2,
-    "num_ratings": 34
+    "num_ratings": 34,
+    "inventory": []
   },
   {
     "name": "Store 2",
@@ -19,7 +20,8 @@
       "coordinates": { "lat": -12.3456, "lng": -12.3456 }
     },
     "average_rating": 2.3,
-    "num_ratings": 45
+    "num_ratings": 45,
+    "inventory": []
   },
   {
     "name": "Store 3",
@@ -30,6 +32,7 @@
       "coordinates": { "lat": -12.3456, "lng": 12.3456 }
     },
     "average_rating": 3.4,
-    "num_ratings": 56
+    "num_ratings": 56,
+    "inventory": []
   }
 ]

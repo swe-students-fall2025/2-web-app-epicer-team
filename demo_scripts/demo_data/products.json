@@ -7,7 +7,6 @@
     "unit_size": "1L",
     "unit_quantity": 1000,
     "unit_type": "ml",
-    "image_url": "https://cdn.app/images/milk.jpg",
     "updated_at": "2025-10-12T10:00:00Z"
   },
   {
@@ -18,7 +17,6 @@
     "unit_size": "12 eggs",
     "unit_quantity": 12,
     "unit_type": "pcs",
-    "image_url": "https://cdn.app/images/eggs.jpg",
     "updated_at": "2025-10-12T10:00:00Z"
   },
   {
@@ -29,7 +27,6 @@
     "unit_size": "1kg",
     "unit_quantity": 1000,
     "unit_type": "g",
-    "image_url": "https://cdn.app/images/bananas.jpg",
     "updated_at": "2025-10-12T10:00:00Z"
   }
 ]
