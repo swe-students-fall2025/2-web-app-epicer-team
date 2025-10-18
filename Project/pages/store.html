@@ -4,9 +4,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Store Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< Updated upstream:Project/pages/store.html
     <link rel="stylesheet" href="../css/styles_mz.css">
 </head>
 
@@ -27,71 +28,332 @@
                     </li>
                 </ul>
             </nav>
-        </div>
-        <!-- Search Bar -->
-        <form class="d-flex search-form" action="{{ url_for('search') }}" method="get">
+=======
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
 
-            <input type="text" class="form-control me-2" placeholder="Search for grocery items..." name="q">
-            <button type="submit" class="btn btn-outline-primary">Search</button>
-        </form>
+<body>
+    <div class="appSim">
+    <header class="site-header">
+        <div class="container-fluid px-3">
+            <div class="row align-items-center py-2">
+                <!-- Logo -->
+                <div class="col-6">
+                    <div class="logo">
+                        <h4 class="mb-0">
+                            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+                        </h4>
+                    </div>
+                </div>
+                <!-- Navigation Menu -->
+                <div class="col-6 text-end">
+                    <nav class="nav">
+                        <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+                    </nav>
+                </div>
+            </div>
+            <!-- Search Bar -->
+            <div class="row">
+                <div class="col-12">
+                    <form class="search-form" action="{{ url_for('search') }}" method="get">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search items..." name="q">
+                            <button type="submit" class="btn btn-primary">
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+>>>>>>> Stashed changes:templates/pages/store.html
+        </div>
     </header>
 
-    <div class="container">
-        <div class="row mb-3">
-  <div class="col-12">
-    <button class="btn btn-outline-secondary back-btn" onclick="goBack()">
-      ← Back
-    </button>
-  </div>
-</div>
+    <div class="container-fluid px-3">
+        <!-- Store Header -->
         <div class="row">
-            <div class="col-md-6 mb-4">
-                <img src="store.jpg" class="d-block w-100 carousel-img" alt="Product image">
-            </div>
-            <!-- Store Details -->
-            <div class="col-md-6">
-                <div class="product-details">
-                    <div class="product-header">
-                        <h2>Whole Foods Market</h2>
-                        <div class="product-rating">
-                            ⭐ 4.7 <span class="review-count">(123 reviews)</span>
-                        </div>
-                        <!-- Store info -->
-    <div class="store-info">
-      <p class="distance"><strong>Distance:</strong> 2.3 km away</p>
-      <p class="hours"><strong>Open Hours:</strong> 8:00 AM – 10:00 PM</p>
-      <p class="contact"><strong>Contact:</strong> +1 (212) 555-2930</p>
-      <p class="description">
-        Whole Foods Market offers a wide range of organic and locally sourced groceries.
-        Visit us for fresh produce, premium meat, and sustainable seafood.
-      </p>
-    </div>
-                    </p>
+            <div class="col-12">
+                <div class="product-main-header">
+                    <h1 class="product-title">Whole Foods Market</h1>
+                    <div class="product-average-rating">
+                        <span class="rating-stars-display">★★★★☆</span>
+                        <span class="rating-score">4.7</span>
+                        <span class="rating-count">(123 reviews)</span>
+                    </div>
                 </div>
+<<<<<<< Updated upstream:Project/pages/store.html
                 <button id="uploadPriceBtn" type="button" class="btn btn-outline-primary mt-3" style="display: block;"
                     onclick="window.location.href='upload.html'">
                     Upload New Price
                 </button>
+=======
+>>>>>>> Stashed changes:templates/pages/store.html
             </div>
         </div>
+        
+        <!-- Store Details -->
+        <div class="row">
+            <div class="col-12">
+                <div class="product-details">
+                    
+                    <!-- Store info -->
+                    <div class="store-info mb-3">
+                        <div class="info-item mb-2">
+                            <strong>Distance:</strong> 2.3 km away
+                        </div>
+                        <div class="info-item mb-2">
+                            <strong>Open Hours:</strong> 8:00 AM – 10:00 PM
+                        </div>
+                        <div class="info-item mb-2">
+                            <strong>Contact:</strong> +1 (212) 555-2930
+                        </div>
+                        <div class="description">
+                            Whole Foods Market offers a wide range of organic and locally sourced groceries.
+                            Visit us for fresh produce, premium meat, and sustainable seafood.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product List Section -->
+                <div class="store-list-section">
+                    <h3 class="store-list-title">Available Products</h3>
+                    
+                    <!-- Product Preview (First Product) -->
+                    <div class="store-preview">
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Organic Bananas</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★★☆</span>
+                                        <span class="rating-score">4.2</span>
+                                    </div>
+                                    <div class="store-price">$2.99/lb</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Product List -->
+                    <div class="store-list-collapsible" id="productListCollapsible">
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Organic Apples</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★★★</span>
+                                        <span class="rating-score">4.8</span>
+                                    </div>
+                                    <div class="store-price">$3.49/lb</div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Fresh Spinach</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★☆☆</span>
+                                        <span class="rating-score">3.5</span>
+                                    </div>
+                                    <div class="store-price">$4.99/lb</div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Organic Carrots</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★★☆</span>
+                                        <span class="rating-score">4.1</span>
+                                    </div>
+                                    <div class="store-price">$2.49/lb</div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Free-Range Eggs</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★★★</span>
+                                        <span class="rating-score">4.9</span>
+                                    </div>
+                                    <div class="store-price">$5.99/dozen</div>
+                                </div>
+                            </a>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('product') }}">
+                                <div class="store-info">
+                                    <h4>Organic Milk</h4>
+                                    <div class="store-rating">
+                                        <span class="rating-stars-display">★★★★☆</span>
+                                        <span class="rating-score">4.3</span>
+                                    </div>
+                                    <div class="store-price">$4.29/gallon</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Expand/Collapse Button -->
+                    <div class="expand-button-container">
+                        <button class="expand-button" onclick="toggleProductList()">
+                            <span class="expand-text">Expand all products available</span>
+                            <span class="expand-icon">▼</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Upload Prompt Section -->
+                <div class="upload-prompt-section">
+                    <div class="upload-prompt-content">
+                        <p class="upload-prompt-text">Can't find what you're looking for?</p>
+                        <a href="{{ url_for('upload') }}" class="upload-prompt-btn">Upload New Product</a>
+                    </div>
+                </div>
+                
+                <!-- Comment List Section -->
+                <div class="comment-list-section">
+                    <h3 class="comment-list-title">Customer Reviews</h3>
+                    
+                    <!-- Comment Preview (First Comment) -->
+                    <div class="comment-preview">
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★★</span>
+                                    <span class="rating-score">5.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Comment List -->
+                    <div class="comment-list-collapsible" id="commentListCollapsible">
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★☆</span>
+                                    <span class="rating-score">4.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★☆☆</span>
+                                    <span class="rating-score">3.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★★</span>
+                                    <span class="rating-score">5.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★☆☆☆</span>
+                                    <span class="rating-score">2.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★☆</span>
+                                    <span class="rating-score">4.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expand/Collapse Button for Comments -->
+                    <div class="expand-button-container">
+                        <button class="expand-button" onclick="toggleCommentList()">
+                            <span class="expand-text">Expand all reviews</span>
+                            <span class="expand-icon">▼</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Rating & Comment Section -->
+                <div class="rating-section">
+                    <h5 class="mb-3">Rate & Review this store</h5>
+                    <form action="{{ url_for('submit_rating') }}" method="post">
+                        <input type="hidden" name="product" value="{{ product_name }}">
+                        <input type="hidden" name="store" value="{{ store_name }}">
 
-        <form action="{{ url_for('submit_rating') }}" method="post">
-            <input type="hidden" name="product" value="{{ product_name }}">
-            <input type="hidden" name="store" value="{{ store_name }}">
+                        <div class="rating-stars mb-3">
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                        </div>
+                        
+                        <div class="comment-section mb-3">
+                            <label for="comment" class="form-label">Your Review:</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="4" 
+                                placeholder="Share your experience with this store..."></textarea>
+                        </div>
 
-            <div class="rating-stars mb-3">
-            <input type="radio" id="star5" name="rating" value="5">
-            <label for="star5">★</label>
-            <input type="radio" id="star4" name="rating" value="4">
-            <label for="star4">★</label>
-            <input type="radio" id="star3" name="rating" value="3">
-            <label for="star3">★</label>
-            <input type="radio" id="star2" name="rating" value="2">
-            <label for="star2">★</label>
-            <input type="radio" id="star1" name="rating" value="1">
-            <label for="star1">★</label>
+                        <button type="submit" class="submit-review-btn btn btn-success w-100">
+                        Submit Review
+                        </button>
+                    </form>
+                </div>
             </div>
+        </div>
+    </div>
+    </div>
 
+<<<<<<< Updated upstream:Project/pages/store.html
             <button type="submit" class="submit-review-btn btn btn-success">
             Submit Rating
             </button>
@@ -110,3 +372,51 @@ function goBack() {
 }
 
 </script>
+=======
+<script>
+function toggleProductList() {
+    const collapsible = document.getElementById('productListCollapsible');
+    const expandText = document.querySelector('.expand-text');
+    const expandIcon = document.querySelector('.expand-icon');
+    
+    if (collapsible.style.display === 'none' || collapsible.style.display === '') {
+        collapsible.style.display = 'block';
+        expandText.textContent = 'Collapse all products';
+        expandIcon.textContent = '▲';
+    } else {
+        collapsible.style.display = 'none';
+        expandText.textContent = 'Expand all products available';
+        expandIcon.textContent = '▼';
+    }
+}
+
+function toggleCommentList() {
+    const collapsible = document.getElementById('commentListCollapsible');
+    const expandButtons = document.querySelectorAll('.expand-button');
+    const commentExpandButton = expandButtons[1]; // Second expand button (for comments)
+    const expandText = commentExpandButton.querySelector('.expand-text');
+    const expandIcon = commentExpandButton.querySelector('.expand-icon');
+    
+    if (collapsible.style.display === 'none' || collapsible.style.display === '') {
+        collapsible.style.display = 'block';
+        expandText.textContent = 'Collapse all reviews';
+        expandIcon.textContent = '▲';
+    } else {
+        collapsible.style.display = 'none';
+        expandText.textContent = 'Expand all reviews';
+        expandIcon.textContent = '▼';
+    }
+}
+
+// Initialize: Hide collapsible content by default
+document.addEventListener('DOMContentLoaded', function() {
+    const productCollapsible = document.getElementById('productListCollapsible');
+    const commentCollapsible = document.getElementById('commentListCollapsible');
+    productCollapsible.style.display = 'none';
+    commentCollapsible.style.display = 'none';
+});
+</script>
+</body>
+</html>
+
+>>>>>>> Stashed changes:templates/pages/store.html

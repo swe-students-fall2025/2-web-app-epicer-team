@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Product Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles_mz.css">
 </head>
 <body>
+<<<<<<< Updated upstream:Project/pages/product.html
       <header class="site-header mb-4">
     <div class="container d-flex justify-content-between align-items-center py-3">
       <!-- Logo -->
@@ -15,102 +16,204 @@
         <h1 class="mb-0">
           <a href="home.html" class="text-decoration-none text-dark">App Name</a>
         </h1>
+=======
+    <div class="appSim">
+      <header class="site-header">
+    <div class="container-fluid px-3">
+      <div class="row align-items-center py-2">
+        <!-- Logo -->
+        <div class="col-6">
+          <div class="logo">
+            <h4 class="mb-0">
+              <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+            </h4>
+          </div>
+        </div>
+        <!-- Navigation Menu -->
+        <div class="col-6 text-end">
+          <nav class="nav">
+            <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+          </nav>
+        </div>
       </div>
-      <!-- Navigation Menu -->
-      <nav class="nav">
-        <ul class="list-inline mb-0">
-          <li class="list-inline-item">
-            <a href="profile.html" class="btn btn-link">Your Account</a>
-          </li>
-        </ul>
-      </nav>
+      <!-- Search Bar -->
+      <div class="row">
+        <div class="col-12">
+          <form class="search-form" action="{{ url_for('search') }}" method="get">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search items..." name="q">
+              <button type="submit" class="btn btn-primary">
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+>>>>>>> Stashed changes:templates/pages/product.html
+      </div>
     </div>
-    <!-- Search Bar -->
-    <form class="d-flex search-form" action="{{ url_for('search') }}" method="get">
-
-      <input type="text" class="form-control me-2" placeholder="Search for grocery items..." name="q">
-      <button type="submit" class="btn btn-outline-primary">Search</button>
-    </form>
   </header>
 
-    <div class="container">
-        <div class="row mb-3">
+    <div class="container-fluid px-3">
+        <!-- Product Header -->
+        <div class="row">
             <div class="col-12">
-                <button class="btn btn-outline-secondary back-btn" onclick="goBack()">
-                    ← Back
-                </button>
+                <div class="product-main-header">
+                    <h1 class="product-title">Chicken Breast</h1>
+                    <div class="product-average-rating">
+                        <span class="rating-stars-display">★★★★☆</span>
+                        <span class="rating-score">4.2</span>
+                        <span class="rating-count">(89 reviews)</span>
+                    </div>
+                </div>
             </div>
         </div>
+        
+        <!-- Store List -->
         <div class="row">
-            <!-- Carousel -->
-            <div class="col-md-6 mb-4">
-                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 1">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 2">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 3">
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </div>
-            <!-- Product Details -->
-            <div class="col-md-6">
-                <div class="product-details">
-                    <div class="product-header">
-                        <h2>Chicken Breast</h2>
-                        <div class="product-rating">
-                            ⭐ 4.7 <span class="review-count">(123 reviews)</span>
+            <div class="col-12">
+                <div class="store-list-section">
+                    <h3 class="store-list-title">Available at these stores:</h3>
+                    
+                    <!-- Store Preview (Always Visible) -->
+                    <div class="store-preview">
+                        <div class="store-item">
+                            <a href="{{ url_for('store') }}">
+                                <div class="store-info">
+                                    <h4>Whole Foods Market</h4>
+                                    <p class="store-rating">★★★★☆ (4.7)</p>
+                                    <p class="store-distance">0.8 km away</p>
+                                    <p class="store-price">$9.99 / lb</p>
+                                </div>
+                            </a>
+                            <div class="update-price-tab">
+                                <button class="update-price-btn" onclick="updatePrice('Whole Foods Market')">
+                                    Update Price
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <p class="price h4 text-primary">$9.99 / lb</p>
-                    <p class="description">Should be some detail written? or maybe not.</p>
-                    <p class="store-info">
-                        Sold by 
-                        <a href="store.html" class="store-link">Whole Foods Market</a>
-                        <span class="distance">• 2.3 km away</span>
-                    </p>
+                    
+                    <!-- Additional Stores (Collapsible) -->
+                    <div class="store-list-collapsible" id="storeListCollapsible">
+                        <div class="store-item">
+                            <a href="{{ url_for('store') }}">
+                                <div class="store-info">
+                                    <h4>Trader Joe's</h4>
+                                    <p class="store-rating">★★★★★ (4.9)</p>
+                                    <p class="store-distance">1.2 km away</p>
+                                    <p class="store-price">$8.49 / lb</p>
+                                </div>
+                            </a>
+                            <div class="update-price-tab">
+                                <button class="update-price-btn" onclick="updatePrice('Trader Joe\'s')">
+                                    Update Price
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('store') }}">
+                                <div class="store-info">
+                                    <h4>Safeway</h4>
+                                    <p class="store-rating">★★★★☆ (4.3)</p>
+                                    <p class="store-distance">1.5 km away</p>
+                                    <p class="store-price">$7.99 / lb</p>
+                                </div>
+                            </a>
+                            <div class="update-price-tab">
+                                <button class="update-price-btn" onclick="updatePrice('Safeway')">
+                                    Update Price
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('store') }}">
+                                <div class="store-info">
+                                    <h4>Kroger</h4>
+                                    <p class="store-rating">★★★★☆ (4.1)</p>
+                                    <p class="store-distance">2.1 km away</p>
+                                    <p class="store-price">$6.99 / lb</p>
+                                </div>
+                            </a>
+                            <div class="update-price-tab">
+                                <button class="update-price-btn" onclick="updatePrice('Kroger')">
+                                    Update Price
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="store-item">
+                            <a href="{{ url_for('store') }}">
+                                <div class="store-info">
+                                    <h4>Costco</h4>
+                                    <p class="store-rating">★★★★★ (4.8)</p>
+                                    <p class="store-distance">3.2 km away</p>
+                                    <p class="store-price">$5.99 / lb</p>
+                                </div>
+                            </a>
+                            <div class="update-price-tab">
+                                <button class="update-price-btn" onclick="updatePrice('Costco')">
+                                    Update Price
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expand/Collapse Button -->
+                    <div class="expand-button-container">
+                        <button class="expand-button" onclick="toggleStoreList()">
+                            <span class="expand-text">Expand all stores available</span>
+                            <span class="expand-icon">▼</span>
+                        </button>
+                    </div>
                 </div>
-                <button id="uploadPriceBtn" type="button" class="btn btn-outline-primary mt-3" style="display: block;"
-                    onclick="window.location.href='upload.html'">
-                    Upload New Price
-                </button>
             </div>
-        <form action="{{ url_for('submit_rating') }}" method="post">
-            <input type="hidden" name="product" value="{{ product_name }}">
-            <input type="hidden" name="store" value="{{ store_name }}">
+        </div>
+    </div>  
+</body>
 
-            <div class="rating-stars mb-3">
-            <input type="radio" id="star5" name="rating" value="5">
-            <label for="star5">★</label>
-            <input type="radio" id="star4" name="rating" value="4">
-            <label for="star4">★</label>
-            <input type="radio" id="star3" name="rating" value="3">
-            <label for="star3">★</label>
-            <input type="radio" id="star2" name="rating" value="2">
-            <label for="star2">★</label>
-            <input type="radio" id="star1" name="rating" value="1">
-            <label for="star1">★</label>
-            </div>
+<script>
+function toggleStoreList() {
+    const collapsible = document.getElementById('storeListCollapsible');
+    const expandText = document.querySelector('.expand-text');
+    const expandIcon = document.querySelector('.expand-icon');
+    
+    if (collapsible.style.display === 'none' || collapsible.style.display === '') {
+        // Expand
+        collapsible.style.display = 'block';
+        expandText.textContent = 'Collapse stores';
+        expandIcon.textContent = '▲';
+    } else {
+        // Collapse
+        collapsible.style.display = 'none';
+        expandText.textContent = 'Expand all stores available';
+        expandIcon.textContent = '▼';
+    }
+}
 
-            <button type="submit" class="submit-review-btn btn btn-success">
-            Submit Rating
-            </button>
-        </form>
+// Initialize: Hide collapsible content by default
+document.addEventListener('DOMContentLoaded', function() {
+    const collapsible = document.getElementById('storeListCollapsible');
+    collapsible.style.display = 'none';
+});
 
+function updatePrice(storeName) {
+    // Redirect to upload page for price updates
+    window.location.href = `{{ url_for('upload') }}?store=${encodeURIComponent(storeName)}`;
+}
+</script>
 
+<<<<<<< Updated upstream:Project/pages/product.html
    
+=======
+    <!-- Upload Prompt Section -->
+    <div class="upload-prompt-section">
+        <div class="upload-prompt-content">
+            <p class="upload-prompt-text">Can't find what you're looking for?</p>
+            <a href="{{ url_for('upload') }}" class="upload-prompt-btn">Upload New Product</a>
+        </div>
+    </div>
+>>>>>>> Stashed changes:templates/pages/product.html
 </body>
 </html>
