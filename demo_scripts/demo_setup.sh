@@ -31,11 +31,21 @@ $DOCKER_CMD run --name $CONTAINER_NAME \
     -p 27017:27017 \
     -e MONGO_INITDB_ROOT_USERNAME=$MONGO_USER \
     -e MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASS \
+    -e MONGO_INITDB_DATABASE="$DB_NAME" \
     -d $IMAGE_NAME
 
 # Wait for MongoDB to start
 echo "Waiting for MongoDB to initialize..."
-sleep 10
+for i in {1..30}; do
+  if $DOCKER_CMD exec "$CONTAINER_NAME" mongosh --quiet --eval "db.runCommand({ ping: 1 })" admin >/dev/null 2>&1; then
+    echo "MongoDB is ready."
+    break
+  fi
+  sleep 1
+  if [ "$i" -eq 30 ]; then
+    echo "MongoDB did not become ready in time."; exit 1
+  fi
+done
 
 echo "Copying demo JSON files into the container..."
 $DOCKER_CMD cp "$DEMO_DATA_DIR/." "$CONTAINER_NAME":/tmp/demo_data/

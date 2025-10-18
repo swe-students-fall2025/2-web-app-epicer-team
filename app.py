@@ -1,7 +1,7 @@
 import os
 import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
@@ -17,6 +17,9 @@ mongo_port = os.getenv("MONGO_PORT")
 mongo_db = os.getenv("MONGO_DB")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+def rating_handler():
+    return
+
 def create_app():
     app = Flask(__name__)
     app.secret_key = SECRET_KEY
@@ -28,7 +31,9 @@ def create_app():
     def load_user(user_id):
         db_user = db.users.find_one({"_id": ObjectId(user_id)})
         return User(db_user)
+
     mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
+    print("Mongo URI:", mongo_uri) # to test the problem
     cxn = pymongo.MongoClient(mongo_uri)
     db = cxn[mongo_db]
     # check if connected to database
@@ -63,7 +68,7 @@ def create_app():
                 user = User(db_email)
                 login_user(user)
                 flash('Logged in successfully.')
-                return redirect(url_for("profile", user = user))
+                return redirect(url_for("profile"))
             else:
                 print("Wrong password!")
                 return render_template("pages/login.html")
@@ -102,9 +107,13 @@ def create_app():
                 "email": email,
                 "password": password,
             })
-            db.users.insert_one(new_user)
+            doc = db.users.insert_one(new_user)
 
-            return redirect(url_for("profile"), user = User(db_user))
+            user_doc = db.users.find_one({"_id": doc.inserted_id})
+            user = User(user_doc)
+            login_user(user)
+
+            return redirect(url_for("profile"))
         return render_template("pages/register.html")
     
     @app.route("/profile")

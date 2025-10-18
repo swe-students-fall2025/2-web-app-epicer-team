@@ -18,7 +18,7 @@
             <!-- Logo -->
             <div class="logo">
                 <h1 class="mb-0">
-                    <a href="{{ url_for('store') }}" class="text-decoration-none text-dark">App Name</a>
+                    <a href="{{ url_for('store', sid = store._id) }}" class="text-decoration-none text-dark">App Name</a>
                 </h1>
             </div>
             <!-- Navigation Menu -->
@@ -71,7 +71,7 @@
                     </p>
                 </div>
                 <button id="uploadPriceBtn" type="button" class="btn btn-outline-primary mt-3" style="display: block;"
-                    onclick="window.location.href='{{ url_for('upload') }}'">
+                    onclick="window.location.href='{{ url_for(\'upload\') }}'">
                     Upload New Price
                 </button>
             </div>
