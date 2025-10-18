@@ -17,7 +17,7 @@
       <!-- Logo -->
       <div class="logo">
         <h1 class="mb-0">
-          <a href="home.html" class="text-decoration-none text-dark">App Name</a>
+          <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
         </h1>
       </div>
       <!-- Navigation Menu -->
@@ -55,44 +55,27 @@
   <!--search result-->
   <div class="search-results">
   <h2>Search Results</h2>
-  
-  <div class="results-list">
-    <div class="result-item">
-
-      <a href="product.html">
-        <img src="https://via.placeholder.com/100" alt="Item 1">
-        <div class="result-info">
-          <h4>Fresh Chicken Breast</h4>
-          <p>★★★★☆ (4.7)</p>
-          <p>Sold by <a href="{{ url_for('store') }}" class="store-link">GreenMart</a> • 2.3 km away</p>
-          <p class="price">$4.99 / lb</p>
-        </div>
-      </a>
-    </div>
-
-    <div class="result-item">
-      <a href="product.html">
-        <img src="https://via.placeholder.com/100" alt="Item 2">
-        <div class="result-info">
-          <h4>Organic Chicken Breast</h4>
-          <p>★★★★★ (5.0)</p>
-          <p>Sold by <a href="{{ url_for('store') }}" class="store-link">FarmFresh</a> • 4.1 km away</p>
-          <p class="price">$6.99 / lb</p>
-        </div>
-      </a>
-    </div>
-
-    <div class="result-item">
-      <a href="product.html">
-        <img src="https://via.placeholder.com/100" alt="Item 3">
-        <div class="result-info">
-          <h4>Premium Chicken Breast</h4>
-          <p>★★★★☆ (4.5)</p>
-          <p>Sold by <a href="{{ url_for('store') }}" class="store-link">HappyGrocer</a> • 1.2 km away</p>
-          <p class="price">$11.49 / lb</p>
-        </div>
-      </a>
-    </div>
+  {% if query %}
+    <div class="results-list">
+      {% if result and result|length > 0 %}
+        <div class="results-list">
+          {% for item in result %}
+              <div class="result-item">
+                <a href="product.html">
+                  <div class="result-info">
+                    <h4>{{ item.get('name') }}</h4>
+                    <p>★★★★☆ (4.7)</p>
+                    <p class="price">$4.99 / lb</p>
+                  </div>
+                </a>
+              </div>
+          {% endfor %}
+      {% else %}
+        <p>No results found for "<strong>{{ query }}</strong>"</p>
+      {% endif %}
+  {% else %}
+    <p>Enter your search in the search bar to begin searching!</p>
+  {% endif %}
   </div>
 
   <footer class="row paddingTop">

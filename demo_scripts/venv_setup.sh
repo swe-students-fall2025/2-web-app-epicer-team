@@ -4,20 +4,32 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 
 # --- CONFIG ---
-PYTHON=${PYTHON:-python3}
-VENV_DIR="dev_env"
-REQ_FILE=${REQ_FILE:-requirements.txt}
+PIPENV="pipenv"
+PIPENV_CUSTOM_VENV_NAME="dev_env"
+
 
 # --- CHECK PYTHON ---
 if ! command -v "$PYTHON" &>/dev/null; then
-  echo "Python not found. Please install Python 3 first."
+  echo "Python not found. Please install Python first."
   exit 1
 fi
 
 # --- CREATE VIRTUAL ENVIRONMENT ---
-echo "Creating virtual environment in '$VENV_DIR'..."
-$PYTHON -m venv "$VENV_DIR"
+echo "Creating pipenv virtual environment named '$VENV_DIR'..."
+export $PIPENV_CUSTOM_VENV_NAME
+$PIPENV shell
 
+# --- INSTALL DEPENDENCIES ---
+if [ -f Pipfile ]; then
+	echo "Installing dependencies from Pipfile"
+	$PIPENV install
+else
+  echo "Pipfile not found! ."
+  exit 1
+fi
+
+#
+echo "Installing dependencies from Pipfile"
 # --- ACTIVATE VENV ---
 # shellcheck disable=SC1091
 if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "cygwin"* ]] || [[ "$OSTYPE" == "msys"* ]]; then

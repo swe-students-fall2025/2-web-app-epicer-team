@@ -157,19 +157,17 @@ def create_app():
     
     @app.route("/search")
     def search():
-        input = request.args.get("search")
-
-        if input:
-            result_s = list(db.stores.find({"name": input})) # maybe add something to not match strictly (say case insensitive) later
-            result_p = list(db.products.find({"name": input}))
-
+        query = request.args.get("q")
+        result = None
+        if query:
+            #TODO: find closest match to query
+            result_s = list(db.stores.find({"name": query})) 
+            result_p = list(db.products.find({"name": query}))
             result = result_s + result_p
+            return render_template("pages/search.html", query = query, result = result)
+        # On first render, did not query yet
+        return render_template("pages/search.html", query = None, result = result)
 
-        if not result:
-            print("Sorry, we don't have what you're looking for.")
-            return render_template("pages/search.html")
-        
-        return render_template("pages/search.html", input = input, result = result)
     
     @app.route("/filter")
     def filter():
@@ -188,6 +186,11 @@ def create_app():
             
             db_p = db.products.find_one({"name": product})
             db_s = db.stores.find_one({"name": store})
+
+            # Check if product in store inventory
+            # If it is, then update with most recent p
+            #if db_p._id in db_s.inventory:
+                
             
             if not db_p:
                 # if no such product
