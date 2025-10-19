@@ -34,7 +34,12 @@
           <div class="col-12">
             <form class="search-form" action="{{ url_for('search') }}" method="get">
               <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search items..." name="q">
+                <input type="text" class="form-control" placeholder="Search items..." name="q" value="{{ request.args.get('q','') }}">
+                <!-- carry filters -->
+                {% if request.args.get('s') %}<input type="hidden" name="s" value="on">{% endif %}
+                {% if request.args.get('p') %}<input type="hidden" name="p" value="on">{% endif %}
+                {% if request.args.get('b') %}<input type="hidden" name="b" value="{{ request.args.get('b') }}">{% endif %}
+                {% if request.args.get('d') %}<input type="hidden" name="d" value="{{ request.args.get('d') }}">{% endif %}
                 <button type="submit" class="btn btn-primary">
                   Search
                 </button>
@@ -47,36 +52,68 @@
   
     <div class="container-fluid px-3">
       <!-- Filter Bar -->
-      <div class="filter-bar">
-        <div class="filter-left">
-          <h5>Search by</h5>
-          <label>
-            <input type="radio" name="sort" value="price" checked>
-            Price
+      <form action="{{ url_for('search') }}" method="get" class="search-form filter-bar d-flex flex-column gap-2 p-3 border rounded bg-light">
+        <input type="hidden" name="q" value="{{ request.args.get('q','') }}">
+        <h5 class="mb-1">Filter</h5>
+        <!-- Toggle store / product -->
+        <div class="filter-left mt-2">
+          <strong>Include:</strong>
+          <label class="ms-2">
+            <input type="checkbox" name="s" {% if request.args.get('s') or not request.args %}checked{% endif %}> Stores
           </label>
-          <label>
-            <input type="radio" name="sort" value="distance">
-            Distance
+          <label class="ms-2">
+            <input type="checkbox" name="p" {% if request.args.get('p') or not request.args %}checked{% endif %}> Products
           </label>
         </div>
-      </div>
+
+        <!-- Budget and distance filters -->
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+          <label class="mb-0">Max budget $
+            <input type="number" step="0.01" name="b" class="form-control d-inline-block w-auto"
+                  value="{{ request.args.get('b','') }}" style="width:110px;">
+          </label>
+          <label class="mb-0">Max distance (km)
+            <input type="number" step="0.1" name="d" class="form-control d-inline-block w-auto"
+                  value="{{ request.args.get('d','') }}" style="width:130px;">
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <div class="mt-2">
+          <button type="submit" class="btn btn-primary">Apply Filter</button>
+        </div>
+      </form>
 
       <!-- Search Results -->
       <div class="search-results">
         <h2>Search Results</h2>
         {% if query %}
           {% if result and result|length > 0 %}
-            <div class="results-list">
+            <div class="results-list d-grid gap-2">
               {% for item in result %}
-                <a href="product.html" class="result-item">
-                  <img src="product.jpg" alt="{{ item.get('name') }}" class="result-img">
-                  <div class="result-info">
-                    <h4>{{ item.get('name') }}</h4>
-                    <p>★★★★☆ (4.7)</p>
-                    <p class="price">$4.99 / lb</p>
-                    <p class="store-link">Available at Whole Foods Market</p>
-                  </div>
-                </a>
+                {% set t = item.get('type') %}
+                {% if t == 'store' %}
+                  <a href="{{ url_for('store', sid=item.id) }}" class="result-item d-flex p-2 border rounded text-decoration-none text-dark">
+                    <img src="{{ url_for('static', filename='images/store-placeholder.jpg') }}" alt="{{ item.get('name') }}" class="result-img me-3" style="width:64px;height:64px;object-fit:cover;">
+                    <div class="result-info">
+                      <h5 class="mb-1">{{ item.get('name') }}</h5>
+                      <div class="small text-muted">
+                        {{ item.get('address','Address unavailable') }} • {{ item.get('distance','—') }} km
+                      </div>
+                    </div>
+                  </a>
+                {% elif t == 'product' %}
+                  <a href="{{ url_for('product', product_id=item.id) }}" class="result-item d-flex p-2 border rounded text-decoration-none text-dark">
+                    <img src="{{ url_for('static', filename='images/product-placeholder.jpg') }}" alt="{{ item.get('name') }}" class="result-img me-3" style="width:64px;height:64px;object-fit:cover;">
+                    <div class="result-info">
+                      <h5 class="mb-1">{{ item.get('name') }}</h5>
+                      <div class="small">
+                        ${{ '%.2f'|format(item.get('price', 0)) }}{% if item.get('unit') %} / {{ item.unit }}{% endif %}
+                      </div>
+                      <div class="small text-muted">Available at {{ item.get('store','—') }}</div>
+                    </div>
+                  </a>
+                {% endif %}
               {% endfor %}
             </div>
           {% else %}
@@ -87,8 +124,6 @@
           {% endif %}
         {% endif %}
       </div>
-    </div>
-
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>

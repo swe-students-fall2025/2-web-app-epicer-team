@@ -182,9 +182,11 @@ def create_app():
             result_s = list(db.stores.find(name_filter))
             for s in result_s:
                 s["type"] = "store"
+                s["id"] = str(s["_id"])
             result_p = list(db.products.find(name_filter))
             for p in result_p:
                 p["type"] = "product"
+                p["id"] = str(p["_id"])
             if store == product:
                 result = result_s + result_p
             elif store:
@@ -221,7 +223,7 @@ def create_app():
             proof = request.form.get("proof")
 
             # mock data for now
-            distance = random.random(0,20)
+            distance = random.uniform(0, 20)
             
             db_p = db.products.find_one({"name": product})
             db_s = db.stores.find_one({"name": store})
@@ -236,7 +238,7 @@ def create_app():
                 p = {
                     "name" : product,
                     "store" : store,
-                    "price" : price,
+                    "price" : float(price),
                     "img" : proof,
                     }
                 db.products.insert_one(p)
@@ -244,7 +246,7 @@ def create_app():
                 s = {
                     "name" : store,
                     "product" : product,
-                    "price" : price,
+                    "price" : float(price),
                     "location": location,
                     "distance" : distance,
                     "img" : proof,
