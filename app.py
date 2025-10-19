@@ -6,6 +6,7 @@ import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from models import User
+import random
 
 load_dotenv()
 login_manager = LoginManager()
@@ -17,7 +18,7 @@ mongo_port = os.getenv("MONGO_PORT")
 mongo_db = os.getenv("MONGO_DB")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-def rating_handler():
+def rating_handler(id):
     return
 
 def create_app():
@@ -167,21 +168,46 @@ def create_app():
     @app.route("/search")
     def search():
         query = request.args.get("q")
-        result = None
+        # by store/ product
+        store = request.args.get("s") == "on"
+        product = request.args.get("p") =="on"
+        # by price (budget)
+        budget = request.args.get("b", type=float)
+        # by distance
+        distance = request.args.get("d", type=float)
+
+        name_filter = {"name": {"$regex": query, "$options": "i"}} 
+
         if query:
-            #TODO: find closest match to query
-            result_s = list(db.stores.find({"name": query})) 
-            result_p = list(db.products.find({"name": query}))
-            result = result_s + result_p
+            result_s = list(db.stores.find(name_filter))
+            for s in result_s:
+                s["type"] = "store"
+            result_p = list(db.products.find(name_filter))
+            for p in result_p:
+                p["type"] = "product"
+            if store == product:
+                result = result_s + result_p
+            elif store:
+                result = result_s
+            elif product:
+                result = result_p
+
+            # check budget and distance
+            if budget is not None:
+                result = [r for r in result if (r["type"] == "store") or (r.get("price", float("inf")) <= budget)] 
+            if distance is not None:
+                store_distance = {
+                    s["name"]: s.get("distance", float("inf")) for s in db.stores.find({}, {"_id": 0, "name": 1, "distance": 1})
+                }
+                result = [
+                    r for r in result if (
+                        r.get("distance", float("inf")) < distance
+                        or store_distance.get(r.get("store"), float("inf")) < distance
+                    )
+                ]
             return render_template("pages/search.html", query = query, result = result)
         # On first render, did not query yet
-        return render_template("pages/search.html", query = None, result = result)
-
-    
-    @app.route("/filter")
-    def filter():
-        # do stuff
-        return render_template("pages/search.html")
+        return render_template("pages/search.html", query = None, result = None)
     
     # something's wrong with this one I still need to figure it out
     @app.route("/upload",  methods = ["GET", "POST"]) 
@@ -191,7 +217,11 @@ def create_app():
             product = request.form.get("product")
             store = request.form.get("store")
             price = request.form.get("price")
+            location = request.form.get("location")
             proof = request.form.get("proof")
+
+            # mock data for now
+            distance = random.random(0,20)
             
             db_p = db.products.find_one({"name": product})
             db_s = db.stores.find_one({"name": store})
@@ -215,6 +245,8 @@ def create_app():
                     "name" : store,
                     "product" : product,
                     "price" : price,
+                    "location": location,
+                    "distance" : distance,
                     "img" : proof,
                 }
                 db.stores.insert_one(s)
