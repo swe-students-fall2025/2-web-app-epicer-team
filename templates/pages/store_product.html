@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Product Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="appSim">
+      <header class="site-header">
+    <div class="container-fluid px-3">
+      <div class="row align-items-center py-2">
+        <!-- Logo -->
+        <div class="col-6">
+          <div class="logo">
+            <h4 class="mb-0">
+              <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+            </h4>
+          </div>
+        </div>
+        <!-- Navigation Menu -->
+        <div class="col-6 text-end">
+          <nav class="nav">
+            <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+          </nav>
+        </div>
+      </div>
+      <!-- Search Bar -->
+      <div class="row">
+        <div class="col-12">
+          <form class="search-form" action="{{ url_for('search') }}" method="get">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search items..." name="q">
+              <button type="submit" class="btn btn-primary">
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    <div class="container-fluid px-3">
+        <!-- Product Image -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 2">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 3">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Details -->
+        <div class="row">
+            <div class="col-12">
+                <div class="product-details">
+                    <div class="product-header">
+                        <h1 class="product-title mb-2">Chicken Breast</h1>
+                        
+                        
+                        <div class="product-average-rating mb-2">
+                            <span class="rating-stars-display">★★★★☆</span>
+                            <span class="rating-score">4.7</span>
+                            <span class="rating-count">(123 reviews)</span>
+                        </div>
+                        <div class="price-update-row d-flex justify-content-between align-items-center mb-3">
+                            <p class="price h4 text-primary mb-0">$9.99 / lb</p>
+                            <a href="{{ url_for('upload') }}?store=Whole%20Foods%20Market" class="update-price-link">Update Price</a>
+                        </div>
+                        
+                        <div class="store-info mb-3">
+                            <strong>Sold by:</strong> 
+                            <a href="{{ url_for('store') }}" class="store-link">Whole Foods Market</a>
+                            <span class="distance">• 2.3 km away</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Comment List Section -->
+                <div class="comment-list-section">
+                    <h3 class="comment-list-title">Customer Reviews</h3>
+                    
+                    <!-- Comment Preview (First Comment) -->
+                    <div class="comment-preview">
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★★</span>
+                                    <span class="rating-score">5.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Collapsible Comment List -->
+                    <div class="comment-list-collapsible" id="commentListCollapsible">
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★☆</span>
+                                    <span class="rating-score">4.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★☆☆</span>
+                                    <span class="rating-score">3.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★★</span>
+                                    <span class="rating-score">5.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★☆☆☆</span>
+                                    <span class="rating-score">2.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                        
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">John Doe</div>
+                                <div class="comment-rating">
+                                    <span class="rating-stars-display">★★★★☆</span>
+                                    <span class="rating-score">4.0</span>
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                blah
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expand/Collapse Button for Comments -->
+                    <div class="expand-button-container">
+                        <button class="expand-button" onclick="toggleCommentList()">
+                            <span class="expand-text">Expand all reviews</span>
+                            <span class="expand-icon">▼</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Rating & Comment Section -->
+                <div class="rating-section">
+                    <h5 class="mb-3">Rate & Review this product</h5>
+                    <form action="{{ url_for('submit_rating') }}" method="post">
+                        <input type="hidden" name="product" value="{{ product_name }}">
+                        <input type="hidden" name="store" value="{{ store_name }}">
+
+                        <div class="rating-stars mb-3">
+                        <input type="radio" id="star5" name="rating" value="5">
+                        <label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1">★</label>
+                        </div>
+                        
+                        <div class="comment-section mb-3">
+                            <label for="comment" class="form-label">Your Review:</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="4" 
+                                placeholder="Share your experience with this product..."></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-review-btn btn btn-success w-100">
+                        Submit Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+function toggleCommentList() {
+    const collapsible = document.getElementById('commentListCollapsible');
+    const expandButton = document.querySelector('.expand-button');
+    const expandText = expandButton.querySelector('.expand-text');
+    const expandIcon = expandButton.querySelector('.expand-icon');
+    
+    if (collapsible.style.display === 'none' || collapsible.style.display === '') {
+        collapsible.style.display = 'block';
+        expandText.textContent = 'Collapse all reviews';
+        expandIcon.textContent = '▲';
+    } else {
+        collapsible.style.display = 'none';
+        expandText.textContent = 'Expand all reviews';
+        expandIcon.textContent = '▼';
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const commentCollapsible = document.getElementById('commentListCollapsible');
+    commentCollapsible.style.display = 'none';
+});
+</script>
+</body>
+</html>

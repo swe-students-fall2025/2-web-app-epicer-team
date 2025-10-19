@@ -2,111 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Search Page</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/style_mz.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
-
 
 <body>
   <div class="appSim">
-  <header class="site-header mb-4">
-    <div class="container d-flex justify-content-between align-items-center py-3">
-      <!-- Logo -->
-      <div class="logo">
-        <h1 class="mb-0">
-          <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
-        </h1>
+    <header class="site-header">
+      <div class="container-fluid px-3">
+        <div class="row align-items-center py-2">
+          <!-- Logo -->
+          <div class="col-6">
+            <div class="logo">
+              <h4 class="mb-0">
+                <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+              </h4>
+            </div>
+          </div>
+          <!-- Navigation Menu -->
+          <div class="col-6 text-end">
+            <nav class="nav">
+              <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+            </nav>
+          </div>
+        </div>
+        <!-- Search Bar -->
+        <div class="row">
+          <div class="col-12">
+            <form class="search-form" action="{{ url_for('search') }}" method="get">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search items..." name="q">
+                <button type="submit" class="btn btn-primary">
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <!-- Navigation Menu -->
-      <nav class="nav">
-        <ul class="list-inline mb-0">
-          <li class="list-inline-item">
-            <a href="{{ url_for('profile') }}" class="btn btn-link">Your Account</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <!-- Search Bar -->
-    <form class="d-flex search-form" action="{{ url_for('search') }}" method="get">
-
-      <input type="text" class="form-control me-2" placeholder="Search for grocery items..." name="q">
-      <button type="submit" class="btn btn-outline-primary">Search</button>
-    </form>
-  </header>
+    </header>
   
-  <!-- Filter Bar -->
-  <form action="{{ url_for('search') }}" method="get" class="filter-bar d-flex justify-content-between align-items-center py-3 px-4 bg-light border-bottom">
-    <div class="filter-left">
-      <h5 class="mb-2">Filter Search</h5>
-
-      <!-- Store / Product toggle -->
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" name="s" id="storeCheck">
-        <label class="form-check-label" for="storeCheck">Stores</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="checkbox" name="p" id="productCheck">
-        <label class="form-check-label" for="productCheck">Products</label>
-      </div>
-
-      <!-- Budget -->
-      <div class="input-group input-group-sm mt-2">
-        <span class="input-group-text">$</span>
-        <input type="number" step="0.01" class="form-control" name="b" placeholder="Max budget">
+    <div class="container-fluid px-3">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-left">
+          <h5>Search by</h5>
+          <label>
+            <input type="radio" name="sort" value="price" checked>
+            Price
+          </label>
+          <label>
+            <input type="radio" name="sort" value="distance">
+            Distance
+          </label>
+        </div>
       </div>
 
-      <!-- Distance -->
-      <div class="input-group input-group-sm mt-2">
-        <span class="input-group-text">📍</span>
-        <input type="number" step="0.1" class="form-control" name="d" placeholder="Max distance (km)">
-      </div>
-
-      <!-- Search bar -->
-      <div class="input-group input-group-sm mt-2">
-        <input type="text" class="form-control" name="q" placeholder="Search term">
-        <button class="btn btn-primary btn-sm" type="submit">Search</button>
-      </div>
-    </div>
-  </form>
-
-  <!--search result-->
-  <div class="search-results">
-  <h2>Search Results</h2>
-  {% if query %}
-    <div class="results-list">
-      {% if result and result|length > 0 %}
-        <div class="results-list">
-          {% for item in result %}
-              <div class="result-item">
-                <a href="product.html">
+      <!-- Search Results -->
+      <div class="search-results">
+        <h2>Search Results</h2>
+        {% if query %}
+          {% if result and result|length > 0 %}
+            <div class="results-list">
+              {% for item in result %}
+                <a href="product.html" class="result-item">
+                  <img src="product.jpg" alt="{{ item.get('name') }}" class="result-img">
                   <div class="result-info">
                     <h4>{{ item.get('name') }}</h4>
                     <p>★★★★☆ (4.7)</p>
                     <p class="price">$4.99 / lb</p>
+                    <p class="store-link">Available at Whole Foods Market</p>
                   </div>
                 </a>
-              </div>
-          {% endfor %}
-      {% else %}
-        <p>No results found for "<strong>{{ query }}</strong>"</p>
-      {% endif %}
-  {% else %}
-    <p>Enter your search in the search bar to begin searching!</p>
-  {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="no-results">
+              <p>No results found for "<strong>{{ query }}</strong>"</p>
+              <p>Try adjusting your search terms or filters.</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
   </div>
 
-  <footer class="row paddingTop">
-
-    <div class="col-md-6">
-      <h5>Developed by Epicer Team</h>
-    </div>
-  </footer>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
