@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import pymongo
@@ -48,7 +48,6 @@ def create_app():
     def show_home():
         return render_template("pages/home.html")
     
-    # i'm still working on how to use hash here
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == "POST":
@@ -69,7 +68,7 @@ def create_app():
                 user = User(db_email)
                 login_user(user)
                 flash('Logged in successfully.')
-                return redirect(url_for("profile"))
+                return redirect(url_for("search"))
             else:
                 print("Wrong password!")
                 return render_template("pages/login.html")
@@ -94,12 +93,8 @@ def create_app():
                 print("Please fill in all fields!")
                 return render_template("pages/register.html")
             
-            db_user = db.users.find_one({"username": username}) # since we have email maybe allow same username?
             db_email = db.users.find_one({"email": email})
-            if db_user:
-                print("Username already exists!")
-                return render_template("pages/register.html")
-            elif db_email:
+            if db_email:
                 print("Email already registered!")
                 return render_template("pages/register.html")
             
@@ -114,7 +109,7 @@ def create_app():
             user = User(user_doc)
             login_user(user)
 
-            return redirect(url_for("profile"))
+            return redirect(url_for("search"))
         return render_template("pages/register.html")
     
     @app.route("/profile")
@@ -139,15 +134,28 @@ def create_app():
     def store(sid):
         store = db.stores.find_one({"_id": ObjectId(sid)})
         if not store:
-            #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("pages/store.html", store = store)
-    
-    @app.route("/store/<sid>", methods = ["POST"])
-    @login_required
-    def rating_s():
-        # do stuff
-        return render_template("pages/store.html", store = store)
+        
+        # compute average rating
+        all_r = list(db.ratings.find({"type": "store", "target_id": ObjectId(sid)}, {"_id": 0, "user_id":1, "rating": 1,}))
+        ratings = [r.get("rating") for r in all_r if "rating" in r]
+        avg_r = round(sum(ratings) / len(ratings), 2) if ratings else None
+        num_r = len(ratings)
+
+        # take comments out with ratings
+        all_c = list(db.ratings.find(
+            {"type": "store", "target_id": ObjectId(sid)},
+            {"_id": 0, "user_id": 1, "rating": 1, "comment": 1, "updated_at": 1}
+        ))
+        # Attach username to each review
+        for r in all_c:
+            user = db.users.find_one({"_id": r["user_id"]}, {"username": 1})
+            r["username"] = user["username"] if user else "Anonymous"
+
+        #all products of the store
+        p_list = list(db.products.find({"store": store["name"]}))
+
+        return render_template("pages/store.html", store = store, sid = sid, avg_r = avg_r, num_r = num_r, r = ratings, products = p_list, reviews = all_c)
     
     @app.route("/product/<product_id>")
     def product(product_id):
@@ -157,13 +165,39 @@ def create_app():
             return redirect(url_for("search"))
         return render_template("pages/product.html", product = product)
     
-    @app.route("/product/<product_id>", methods = ["POST"])
+    @app.route("/rating/<target>/<target_id>", methods = ["POST"])
     @login_required
-    def rating_p():
-        # do stuff
-        return render_template("pages/product.html", product = product)
-    
-    # I feel like we should do a rating handler and implement it in both for product and store instead of doing the same logic twice
+    def rating(target, target_id):
+        r = int(request.form.get("rating", 0))
+        c = request.form.get("comment", "").strip()
+        if r < 1 or r > 5:
+            flash("Invalid rating value!")
+            return redirect(request.referrer)
+        
+        db.ratings.update_one(
+            {"user_id": ObjectId(current_user.id), 
+             "type": target, 
+             "target_id": ObjectId(target_id)},
+            {
+                "$set": {
+                    "rating": r,
+                    "comment": c,
+                    "updated_at": datetime.utcnow(),
+                },
+                "$setOnInsert": {
+                    "user_id": ObjectId(current_user.id),
+                    "type": target,
+                    "target_id": ObjectId(target_id),
+                    "created_at": datetime.utcnow()},
+            },
+            upsert=True,
+        )
+
+        flash("Thank you for your feedback!")
+        if target == "store":
+            return redirect(url_for("store", sid = target_id))
+        elif target == "product":
+            return redirect(url_for("product", product_id = target_id))
     
     @app.route("/search")
     def search():

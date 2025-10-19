@@ -54,9 +54,23 @@
                 <div class="product-main-header">
                     <h1 class="product-title">{{ store.name }}</h1>
                     <div class="product-average-rating">
-                        <span class="rating-stars-display">★★★★☆</span>
-                        <span class="rating-score">4.7</span>
-                        <span class="rating-count">(123 reviews)</span>
+                        {% if avg_r is none or num_r == 0 %}
+                        <span class="text-muted">No ratings yet</span>
+                        {% else %}
+                        <span class="rating-stars-display">
+                            {% for i in range(1, 6) %}
+                                {% if avg_r >= i %}
+                                ★
+                                {% elif avg_r >= i - 0.5 %}
+                                ☆
+                                {% else %}
+                                ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="rating-score">{{avg_r}}</span>
+                        <span class="rating-count">({{num_r}} ratings)</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -91,7 +105,7 @@
                     {% if products %}
                     <div class="store-preview">
                     <div class="store-item">
-                        <a href="{{ url_for('product', product_id=products[0].id) }}">
+                        <a href="{{ url_for('product', product_id=products[0]._id) }}">
                         <div class="store-info">
                             <h4>{{ products[0].name }}</h4>
                             <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
@@ -104,7 +118,7 @@
                     <div class="store-list-collapsible" id="productListCollapsible">
                     {% for p in products[1:] %}
                         <div class="store-item">
-                        <a href="{{ url_for('product', product_id=p.id) }}">
+                        <a href="{{ url_for('product', product_id=p._id) }}">
                             <div class="store-info">
                             <h4>{{ p.name }}</h4>
                             <div class="store-price">
@@ -138,105 +152,86 @@
                 <div class="comment-list-section">
                     <h3 class="comment-list-title">Customer Reviews</h3>
                     
-                    <!-- Comment Preview (First Comment) -->
-                    <div class="comment-preview">
+                    {% if reviews and reviews|length > 0 %}
+                        {# --- Preview: first review --- #}
+                        {% set first = reviews[0] %}
+                        <div class="comment-preview">
                         <div class="comment-item">
                             <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
+                            <div class="comment-user">
+                                {{ first.username | default("Anonymous") }}
+                            </div>
+                            <div class="comment-rating">
+                                <span class="rating-stars-display">
+                                {% set rv = first.rating or 0 %}
+                                {% for i in range(1, 6) %}
+                                    {% if rv >= i %}
+                                    ★
+                                    {% elif rv >= i - 0.5 %}
+                                    ☆
+                                    {% else %}
+                                    ☆
+                                    {% endif %}
+                                {% endfor %}
+                                </span>
+                                <span class="rating-score">{{ (first.rating or 0)|round(1) }}</span>
+                            </div>
+                            </div>
+                            <div class="comment-content">
+                            {{ first.comment or "—" }}
+                            </div>
+                        </div>
+                        </div>
+
+                        {# --- Collapsible: the rest --- #}
+                        {% set rest = reviews[1:] %}
+                        <div class="comment-list-collapsible" id="commentListCollapsible" style="display:none;">
+                        {% for c in rest %}
+                            <div class="comment-item">
+                            <div class="comment-header">
+                                <div class="comment-user">
+                                {{ c.username | default("Anonymous") }}
+                                </div>
                                 <div class="comment-rating">
-                                    <span class="rating-stars-display">★★★★★</span>
-                                    <span class="rating-score">5.0</span>
+                                <span class="rating-stars-display">
+                                    {% set rv = c.rating or 0 %}
+                                    {% for i in range(1, 6) %}
+                                    {% if rv >= i %}
+                                        ★
+                                    {% elif rv >= i - 0.5 %}
+                                        ☆
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="rating-score">{{ (c.rating or 0)|round(1) }}</span>
                                 </div>
                             </div>
                             <div class="comment-content">
-                                blah
+                                {{ c.comment or "—" }}
                             </div>
+                            </div>
+                        {% endfor %}
                         </div>
-                    </div>
-                    
-                    <!-- Collapsible Comment List -->
-                    <div class="comment-list-collapsible" id="commentListCollapsible">
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
-                                <div class="comment-rating">
-                                    <span class="rating-stars-display">★★★★☆</span>
-                                    <span class="rating-score">4.0</span>
-                                </div>
-                            </div>
-                            <div class="comment-content">
-                                blah
-                            </div>
-                        </div>
-                        
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
-                                <div class="comment-rating">
-                                    <span class="rating-stars-display">★★★☆☆</span>
-                                    <span class="rating-score">3.0</span>
-                                </div>
-                            </div>
-                            <div class="comment-content">
-                                blah
-                            </div>
-                        </div>
-                        
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
-                                <div class="comment-rating">
-                                    <span class="rating-stars-display">★★★★★</span>
-                                    <span class="rating-score">5.0</span>
-                                </div>
-                            </div>
-                            <div class="comment-content">
-                                blah
-                            </div>
-                        </div>
-                        
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
-                                <div class="comment-rating">
-                                    <span class="rating-stars-display">★★☆☆☆</span>
-                                    <span class="rating-score">2.0</span>
-                                </div>
-                            </div>
-                            <div class="comment-content">
-                                blah
-                            </div>
-                        </div>
-                        
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <div class="comment-user">John Doe</div>
-                                <div class="comment-rating">
-                                    <span class="rating-stars-display">★★★★☆</span>
-                                    <span class="rating-score">4.0</span>
-                                </div>
-                            </div>
-                            <div class="comment-content">
-                                blah
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Expand/Collapse Button for Comments -->
-                    <div class="expand-button-container">
-                        <button class="expand-button" onclick="toggleCommentList()">
+
+                        <!-- Expand/Collapse Button for Comments -->
+                        <div class="expand-button-container">
+                        <button class="expand-button" type="button" onclick="toggleCommentList()">
                             <span class="expand-text">Expand all reviews</span>
                             <span class="expand-icon">▼</span>
                         </button>
-                    </div>
+                        </div>
+
+                    {% else %}
+                        <div class="text-muted">No reviews yet</div>
+                    {% endif %}
                 </div>
                 
                 <!-- Rating & Comment Section -->
                 <div class="rating-section">
                     <h5 class="mb-3">Rate & Review this store</h5>
-                    <form action="{{ url_for('upload') }}" method="post">
-                        <input type="hidden" name="product" value="{{ store.name }}">
-                        <input type="hidden" name="store" value="{{ store.name }}">
+                    <form action="{{ url_for('rating', target = 'store', target_id = sid) }}" method="post">
 
                         <div class="rating-stars mb-3">
                         <input type="radio" id="star5" name="rating" value="5">
