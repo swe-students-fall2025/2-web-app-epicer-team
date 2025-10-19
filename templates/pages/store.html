@@ -52,7 +52,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="product-main-header">
-                    <h1 class="product-title">Whole Foods Market</h1>
+                    <h1 class="product-title">{{ store.name }}</h1>
                     <div class="product-average-rating">
                         <span class="rating-stars-display">★★★★☆</span>
                         <span class="rating-score">4.7</span>
@@ -70,7 +70,7 @@
                     <!-- Store info -->
                     <div class="store-info mb-3">
                         <div class="info-item mb-2">
-                            <strong>Distance:</strong> 2.3 km away
+                            <strong>Distance:</strong> {{ store.get('distance', '—') }} km away
                         </div>
                         <div class="info-item mb-2">
                             <strong>Open Hours:</strong> 8:00 AM – 10:00 PM
@@ -88,99 +88,43 @@
                 <!-- Product List Section -->
                 <div class="store-list-section">
                     <h3 class="store-list-title">Available Products</h3>
-                    
-                    <!-- Product Preview (First Product) -->
+                    {% if products %}
                     <div class="store-preview">
-                        <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Organic Bananas</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★★☆</span>
-                                        <span class="rating-score">4.2</span>
-                                    </div>
-                                    <div class="store-price">$2.99/lb</div>
-                                </div>
-                            </a>
+                    <div class="store-item">
+                        <a href="{{ url_for('product', product_id=products[0].id) }}">
+                        <div class="store-info">
+                            <h4>{{ products[0].name }}</h4>
+                            <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
                         </div>
+                        </a>
                     </div>
-                    
-                    <!-- Collapsible Product List -->
+                    </div>
+
+                    <!-- Collapsible list for the rest -->
                     <div class="store-list-collapsible" id="productListCollapsible">
+                    {% for p in products[1:] %}
                         <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Organic Apples</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★★★</span>
-                                        <span class="rating-score">4.8</span>
-                                    </div>
-                                    <div class="store-price">$3.49/lb</div>
-                                </div>
-                            </a>
+                        <a href="{{ url_for('product', product_id=p.id) }}">
+                            <div class="store-info">
+                            <h4>{{ p.name }}</h4>
+                            <div class="store-price">
+                                ${{ '%.2f'|format(p.get('price', 0)) }}
+                            </div>
+                            </div>
+                        </a>
                         </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Fresh Spinach</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★☆☆</span>
-                                        <span class="rating-score">3.5</span>
-                                    </div>
-                                    <div class="store-price">$4.99/lb</div>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Organic Carrots</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★★☆</span>
-                                        <span class="rating-score">4.1</span>
-                                    </div>
-                                    <div class="store-price">$2.49/lb</div>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Free-Range Eggs</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★★★</span>
-                                        <span class="rating-score">4.9</span>
-                                    </div>
-                                    <div class="store-price">$5.99/dozen</div>
-                                </div>
-                            </a>
-                        </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('product') }}">
-                                <div class="store-info">
-                                    <h4>Organic Milk</h4>
-                                    <div class="store-rating">
-                                        <span class="rating-stars-display">★★★★☆</span>
-                                        <span class="rating-score">4.3</span>
-                                    </div>
-                                    <div class="store-price">$4.29/gallon</div>
-                                </div>
-                            </a>
-                        </div>
+                    {% endfor %}
                     </div>
-                    
-                    <!-- Expand/Collapse Button -->
+
                     <div class="expand-button-container">
-                        <button class="expand-button" onclick="toggleProductList()">
-                            <span class="expand-text">Expand all products available</span>
-                            <span class="expand-icon">▼</span>
-                        </button>
+                    <button class="expand-button" onclick="toggleProductList()">
+                        <span class="expand-text">Expand all products available</span>
+                        <span class="expand-icon">▼</span>
+                    </button>
                     </div>
-                </div>
+                {% else %}
+                    <div class="text-muted">No products listed for this store yet.</div>
+                {% endif %}
                 
                 <!-- Upload Prompt Section -->
                 <div class="upload-prompt-section">
@@ -290,9 +234,9 @@
                 <!-- Rating & Comment Section -->
                 <div class="rating-section">
                     <h5 class="mb-3">Rate & Review this store</h5>
-                    <form action="{{ url_for('submit_rating') }}" method="post">
-                        <input type="hidden" name="product" value="{{ product_name }}">
-                        <input type="hidden" name="store" value="{{ store_name }}">
+                    <form action="{{ url_for('upload') }}" method="post">
+                        <input type="hidden" name="product" value="{{ store.name }}">
+                        <input type="hidden" name="store" value="{{ store.name }}">
 
                         <div class="rating-stars mb-3">
                         <input type="radio" id="star5" name="rating" value="5">

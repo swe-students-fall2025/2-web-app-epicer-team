@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Organic Bananas",
+        "store": "Whole Foods Market",
+        "price": 0.89,
+        "img": "https://example.com/img/bananas.jpg"
+    },
+    {
+        "name": "Almond Milk",
+        "store": "Trader Joe's",
+        "price": 2.99,
+        "img": "https://example.com/img/almond_milk.jpg"
+    },
+    {
+        "name": "Ground Coffee",
+        "store": "Starbucks",
+        "price": 12.49,
+        "img": "https://example.com/img/coffee.jpg"
+    },
+    {
+        "name": "Free-Range Eggs (12 pack)",
+        "store": "Walmart",
+        "price": 3.79,
+        "img": "https://example.com/img/eggs.jpg"
+    },
+    {
+        "name": "Avocados (4 pack)",
+        "store": "Target",
+        "price": 4.49,
+        "img": "https://example.com/img/avocados.jpg"
+    }
+]
