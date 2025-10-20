@@ -27,7 +27,11 @@
                 <!-- Navigation Menu -->
                 <div class="col-6 text-end">
                     <nav class="nav">
+                        {% if current_user.is_authenticated %}
                         <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login/Register</a>
+                        {% endif %}
                     </nav>
                 </div>
             </div>

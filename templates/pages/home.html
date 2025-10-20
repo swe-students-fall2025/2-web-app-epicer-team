@@ -40,9 +40,10 @@
         <a class="btn btn-outline-primary w-50" href="{{ url_for('product', product_id = product._id) }}">product</a>
         <a class="btn btn-outline-primary w-50" href="{{ url_for('store', sid = store._id) }}">store</a>
         #}
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">Search</a>
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">Upload</a>
-
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">search</a>
+        {% if current_user.is_authenticated %}
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">upload</a>
+        {% endif %}
       </div>
     </nav>
   </div>
