@@ -3,24 +3,12 @@
 {% block title %}Grocery Saver Register{% endblock %}
 
 {% block header %}
-<header class="site-header">
-  <div class="container-fluid px-3">
-    <div class="row align-items-center py-2">
-      <!-- Logo -->
-      <div class="col-6">
-        <div class="logo">
-          <h4 class="mb-0">
-            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">Grocery Saver</a>
-          </h4>
-        </div>
-      </div>
-      <!-- Navigation Menu -->
-      <div class="col-6 text-end d-flex justify-content-end align-items-center">
-        <nav class="nav">
-          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login</a>
-        </nav>
-      </div>
-    </div>
+<header class="header">
+  <div class="header-title">
+    <a class="text-decoration-none" href="{{ url_for('show_home') }}">Grocery Saver</a>
+  </div>
+  <div class="header-buttons nav">
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('login') }}">Login</a>
   </div>
 </header>
 {% endblock %}
