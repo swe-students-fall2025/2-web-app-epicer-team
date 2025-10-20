@@ -1,27 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Error {{ error_code }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        h1 { font-size: 48px; color: #e74c3c; }
-        p { font-size: 20px; color: #333; }
-        a.button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            font-size: 18px;
-            color: #fff;
-            background-color: #3498db;
-            text-decoration: none;
-            border-radius: 8px;
-        }
-        a.button:hover { background-color: #2980b9; }
-    </style>
-</head>
-<body>
-    <h1>Error {{ error_code }}</h1>
-    <p>Something went wrong.</p>
-    <a class="button" href="{{ url_for('show_home') }}">Back to Home</a>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Error {{ error_code }} | Grocery Saver{% endblock %}
+
+{% block search_bar %}{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-4 text-danger mb-3">Error {{ error_code }}</h1>
+    <p class="fs-5 text-muted">Something went wrong.</p>
+    <a href="{{ url_for('show_home') }}" class="btn btn-primary mt-3 px-4" style="background-color:#2e7d32;color:#fff;border-color:#2e7d32;">Back to Home</a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}{% endblock %}

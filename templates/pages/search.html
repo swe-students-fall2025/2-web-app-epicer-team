@@ -49,7 +49,7 @@
                     <div class="result-info">
                       <h5 class="mb-1">{{ item.get('name') }}</h5>
                       <div class="small text-muted">
-                        {{ item.get('address','Address unavailable') }} • {{ item.distances.get(user_id,'—') }} km
+                        {{ item.get('address','Address unavailable') }} • {{ item.distances.get(user_id) or'—' }} km
                       </div>
                     </div>
                   </a>

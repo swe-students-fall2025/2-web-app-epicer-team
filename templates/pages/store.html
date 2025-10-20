@@ -41,7 +41,7 @@
                     <!-- Store info -->
                     <div class="store-info mb-3">
                         <div class="info-item mb-2">
-                            <strong>Distance:</strong> {{ store.distances.get(user_id,'-') }} km away
+                            <strong>Distance:</strong> {{ store.distances.get(user_id) or '-' }} km away
                         </div>
                         <div class="info-item mb-2">
                             <strong>Open Hours:</strong> 8:00 AM – 10:00 PM
