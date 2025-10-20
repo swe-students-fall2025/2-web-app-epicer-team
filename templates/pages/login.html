@@ -16,8 +16,16 @@
 
     <main class="content">
       <h1 class="h5 mb-3">Welcome back</h1>
-      <!-- <form action="/profile/update" method="post" novalidate> -->
-    <!-- temporarily use get until back end-->
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endif %}
+      {% endwith %}
       <form action="{{ url_for('login') }}" method="post" novalidate>
         <div class="mb-3">
           <label class="form-label">Email</label>

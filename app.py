@@ -17,6 +17,7 @@ def create_app():
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
+    login_manager.login_view = "login" 
 
     cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
     db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
@@ -54,7 +55,7 @@ def create_app():
             db_email = db.users.find_one({"email": email})
             # no such user
             if not db_email:
-                print("Email not registered.")
+                flash("Email not registered.")
                 return render_template("pages/login.html")
             
             if db_email["password"] == password:
@@ -63,7 +64,7 @@ def create_app():
                 flash('Logged in successfully.')
                 return redirect(url_for("search"))
             else:
-                print("Wrong password!")
+                flash("Wrong password!")
                 return render_template("pages/login.html")
         return render_template("pages/login.html")
     
@@ -83,12 +84,12 @@ def create_app():
             password = request.form.get("password")
 
             if not username or not email or not password:
-                print("Please fill in all fields!")
+                flash("Please fill in all fields!")
                 return render_template("pages/register.html")
             
             db_email = db.users.find_one({"email": email})
             if db_email:
-                print("Email already registered!")
+                flash("Email already registered!")
                 return render_template("pages/register.html")
             
             new_user = ({
@@ -279,6 +280,20 @@ def create_app():
                         or store_distance.get(r.get("store"), float("inf")) < distance
                     )
                 ]
+            seen = set()
+            unique = []
+            for r in result:
+                if r["type"] == "store":
+                    key = ("store", r.get("name"))
+                else:  # product
+                    key = ("product", r.get("id"))  # product _id is unique
+                if key in seen:
+                    continue
+                seen.add(key)
+                unique.append(r)
+
+            result = unique
+
             return render_template("pages/search.html", query = query, result = result)
         # On first render, did not query yet
         return render_template("pages/search.html", query = None, result = None)
