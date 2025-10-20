@@ -11,14 +11,14 @@
 <body>
   <div class="appSim">
     <header class="header">
-      <a class="btn btn-sm btn-light" href="{{ url_for('show_home') }}">Home</a>
+      <a class="btn btn-sm btn-light btn-outline-primary navbutton" href="{{ url_for('show_home') }}">Home</a>
       <div class="header-title">Your Profile</div>
-      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_profile') }}">Edit</a>
+      <a class="btn btn-sm btn-outline-primary navbutton"  href="{{ url_for('edit_profile') }}">Edit</a>
     </header>
 
     <main class="content">
       <section class="profile-card">
-        <div class="profile-icon ">A</div>
+        <div class="profile-icon ">{{ user.username[0] | upper }}</div>
         <div class="profile-text">
           <div class="profile-name">{{user.username}}</div>
           <div class="profile-email">{{user.email}}</div>
@@ -30,10 +30,10 @@
           <div class="label">Home address</div>
           <div class="value">{{user.address}}</div>
         </div>
-        <div class="list-item">
+        <!-- <div class="list-item">
           <div class="label">other things</div>
           <div class="value">Placeholder</div>
-        </div>
+        </div> -->
       </section>
 
       <a class="btn btn-outline-danger btn-full logout" href="{{ url_for('logout') }}">Log out</a>

@@ -109,7 +109,8 @@ def create_app():
     @app.route("/profile")
     @login_required
     def profile():
-        return render_template("pages/profile.html", user = current_user)
+        userdata = db.users.find_one({"_id": ObjectId(current_user.id)})
+        return render_template("pages/profile.html", user = userdata)
     
     @app.route("/edit_profile", methods = ["GET", "POST"])
     @login_required
@@ -130,7 +131,6 @@ def create_app():
             return redirect(url_for("profile"))
         
         return render_template("pages/edit_profile.html", user=current_user)
-    
     @app.route("/profile", methods = ["POST"])
     @login_required
     def delete_profile():

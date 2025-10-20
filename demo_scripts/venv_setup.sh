@@ -5,6 +5,9 @@ set -e  # Exit immediately on error
 
 # --- CONFIG ---
 PIPENV="pipenv"
+PIPENV_CUSTOM_VENV_NAME="dev_env"
+PYTHON="${PYTHON:-$(command -v python3 || command -v python)}"
+
 
 # --- CHECK PYTHON ---
 PYTHON="${PYTHON:-$(command -v python3 || command -v python)}"
