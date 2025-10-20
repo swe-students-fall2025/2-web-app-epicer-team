@@ -61,7 +61,6 @@ def create_app():
             if db_email["password"] == password:
                 user = User(db_email)
                 login_user(user)
-                flash('Logged in successfully.')
                 return redirect(url_for("search"))
             else:
                 flash("Wrong password!")

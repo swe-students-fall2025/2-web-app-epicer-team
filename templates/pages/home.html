@@ -28,26 +28,58 @@
       <h1 class="h5 page-greeting">Welcome to the Grocery Saver App</h1>
       <p class="muted-note">Select what you would like to do below</p>
 
-      <section class="card card-block">
-        
-      </section>
-    </main>
+{% block search_bar %}{% endblock %}
 
-    <nav class="bottom-nav">
-      <div class="bottom-nav-actions">
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('show_home') }}">Home</a>
-        {#
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('product', product_id = product._id) }}">product</a>
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('store', sid = store._id) }}">store</a>
-        #}
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">search</a>
-        {% if current_user.is_authenticated %}
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">upload</a>
-        {% endif %}
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="product-main-header">
+        <h1 class="product-title">Welcome to Grocery Saver</h1>
+        <div class="product-average-rating">
+          <span class="rating-score">Find the best deals</span>
+          <span class="rating-count">near you</span>
+        </div>
       </div>
-    </nav>
+    </div>
   </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="product-details">
+        <div class="store-list-section">
+          <h3 class="store-list-title">Get Started</h3>
+          
+          <div class="store-preview">
+            <div class="store-item">
+              <a href="{{ url_for('search') }}">
+                <div class="store-info">
+                  <h4>Search Products</h4>
+                  <div class="store-price">Find items and compare prices</div>
+                </div>
+              </a>
+            </div>
+          </div>
+          
+          
+          
+          {% if current_user.is_authenticated %}
+          <div class="store-item">
+            <a href="{{ url_for('upload') }}">
+              <div class="store-info">
+                <h4>Upload Products</h4>
+                <div class="store-price">Share product information</div>
+              </div>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% block bottom_nav %}{% endblock %}
+
+{% block extra_scripts %}{% endblock %}

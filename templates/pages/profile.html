@@ -23,12 +23,28 @@
           <div class="profile-name">{{user.username}}</div>
           <div class="profile-email">{{user.email}}</div>
         </div>
-      </section>
+      </div>
+      <!-- Navigation Menu -->
+      <div class="col-6 text-end d-flex justify-content-end align-items-center">
+        <nav class="nav">
+          <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+{% endblock %}
 
-      <section class="list">
-        <div class="list-item">
-          <div class="label">Home address</div>
-          <div class="value">{{user.address}}</div>
+{% block search_bar %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="product-main-header">
+        <h1 class="product-title">Your Profile</h1>
+        <div class="product-average-rating">
+          <span class="rating-score">Manage your account</span>
         </div>
         <!-- <div class="list-item">
           <div class="label">other things</div>
@@ -44,12 +60,13 @@
       </form>
     </main>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function confirmDelete() {
-      return confirm('Are you sure you want to delete your profile? This action cannot be undone.');
-    }
-  </script>
-  {#<script src="../assets/js/main.js"></script>#}
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function confirmDelete() {
+  return confirm('Are you sure you want to delete your profile? This action cannot be undone.');
+}
+</script>
+{% endblock %}

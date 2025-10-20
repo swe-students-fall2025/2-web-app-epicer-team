@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Search Page</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
+{% extends "base.html" %}
 
 <body>
   <div class="appSim">
@@ -52,9 +43,13 @@
           </div>
         </div>
       </div>
-    </header>
-  
-    <div class="container-fluid px-3">
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
       <!-- Filter Bar -->
       <form action="{{ url_for('search') }}" method="get" class="search-form filter-bar d-flex flex-column gap-2 p-3 border rounded bg-light">
         <input type="hidden" name="q" value="{{ request.args.get('q','') }}">
@@ -128,8 +123,5 @@
           {% endif %}
         {% endif %}
       </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </div>
+{% endblock %}
