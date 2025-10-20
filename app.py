@@ -17,6 +17,7 @@ def create_app():
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
+    login_manager.login_view = "login" 
 
     cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
     db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
@@ -54,16 +55,15 @@ def create_app():
             db_email = db.users.find_one({"email": email})
             # no such user
             if not db_email:
-                print("Email not registered.")
+                flash("Email not registered.")
                 return render_template("pages/login.html")
             
             if db_email["password"] == password:
                 user = User(db_email)
                 login_user(user)
-                flash('Logged in successfully.')
                 return redirect(url_for("search"))
             else:
-                print("Wrong password!")
+                flash("Wrong password!")
                 return render_template("pages/login.html")
         return render_template("pages/login.html")
     
@@ -83,12 +83,12 @@ def create_app():
             password = request.form.get("password")
 
             if not username or not email or not password:
-                print("Please fill in all fields!")
+                flash("Please fill in all fields!")
                 return render_template("pages/register.html")
             
             db_email = db.users.find_one({"email": email})
             if db_email:
-                print("Email already registered!")
+                flash("Email already registered!")
                 return render_template("pages/register.html")
             
             new_user = ({
@@ -130,10 +130,11 @@ def create_app():
             return redirect(url_for("profile"))
         
         return render_template("pages/edit_profile.html", user=current_user)
-    @app.route("/profile", methods = ["POST"])
+    
+    @app.route("/delete_profile", methods = ["POST"])
     @login_required
     def delete_profile():
-        db.user.delete_one({"_id": ObjectId(current_user.id)})
+        db.users.delete_one({"_id": ObjectId(current_user.id)})
         logout_user()
         return redirect(url_for("show_home"))
 
@@ -172,7 +173,7 @@ def create_app():
         
         s_list = list(db.stores.find({"product": product["name"]}))
 
-        return render_template("pages/product.html", product = product, stores = s_list)
+        return render_template("pages/product.html", product_id = product_id, product = product, stores = s_list)
     
     @app.route("/product/<product_id>/<sid>")
     def store_product(product_id, sid):
@@ -279,6 +280,20 @@ def create_app():
                         or store_distance.get(r.get("store"), float("inf")) < distance
                     )
                 ]
+            seen = set()
+            unique = []
+            for r in result:
+                if r["type"] == "store":
+                    key = ("store", r.get("name"))
+                else:  # product
+                    key = ("product", r.get("id"))  # product _id is unique
+                if key in seen:
+                    continue
+                seen.add(key)
+                unique.append(r)
+
+            result = unique
+
             return render_template("pages/search.html", query = query, result = result)
         # On first render, did not query yet
         return render_template("pages/search.html", query = None, result = None)
@@ -287,47 +302,48 @@ def create_app():
     @app.route("/upload",  methods = ["GET", "POST"]) 
     @login_required
     def upload():
-        if request.method == 'POST':
-            product = request.form.get("product")
-            store = request.form.get("store")
-            price = request.form.get("price")
-            address = request.form.get("address")
-            proof = request.form.get("proof")
-
-            # mock data for now
-            distance = random.uniform(0, 20)
+        if request.method == 'GET':
             
-            db_p = db.products.find_one({"name": product})
-            db_s = db.stores.find_one({"name": store})
+            product_id = request.args.get("product_id", "")
+            sid = request.args.get("sid", "")
 
-            # Check if product in store inventory
-            # If it is, then update with most recent p
-            #if db_p._id in db_s.inventory:
+            doc_p = None
+            doc_s = None 
+            
+            if sid:
+                doc_s = db.stores.find_one({"_id": ObjectId(sid)})
                 
-            
-            if not db_p:
-                # if no such product
-                p = {
-                    "name" : product,
-                    "store" : store,
-                    "price" : float(price),
-                    "img" : proof,
-                    }
-                db.products.insert_one(p)
-            if not db_s:
-                s = {
-                    "name" : store,
-                    "product" : product,
-                    "price" : float(price),
-                    "address": address,
-                    "distance" : distance,
-                    "img" : proof,
-                }
-                db.stores.insert_one(s)
+            if product_id:
+                doc_p = db.products.find_one({"_id": ObjectId(product_id)})
 
-            return redirect(url_for("search"))
+            product = doc_p["name"] if doc_p else ""
+            store = doc_s["name"] if doc_s else ""
+            address = doc_s["address"] if doc_s else ""
+            lock_p = bool(product)
+            lock_s = bool(store)
+            return render_template("pages/upload.html", product = product, store = store, address = address, lock_p = lock_p, lock_s = lock_s)
 
-        return render_template("pages/upload.html")
+        product = request.form.get("product", "").strip()
+        store = request.form.get("store", "").strip()
+        price = float(request.form.get("price", 0))
+        address = request.form.get("address", "").strip()
+        proof = request.form.get("proof")
+
+        # dummy data for now
+        distance = random.uniform(0, 20)
+        
+        db.products.update_one(
+            {"name": product, "store": store},
+            {"$set": {"price": price, "img": proof}},
+            upsert=True,
+        )
+        db.stores.update_one(
+            {"name": store, "product": product},
+            {"$set": {"price": price, "address": address, "distance": distance,}},
+            upsert=True,
+        )
+
+        return redirect(url_for("search"))
     
     return app
 

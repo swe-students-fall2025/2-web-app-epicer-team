@@ -1,52 +1,69 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Edit Profile | AppName</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
+{% extends "base.html" %}
 
-<body>
-  <div class="appSim">
-    <header class="header ">
-      <a class="btn btn-sm btn-outline-primary navbutton" href="{{ url_for('profile') }}">Cancel</a>
-      <div class="header-title h5 mb-0">Edit Profile</div>
-    </header>
-    <main class="content p-4">
-      <!-- The correct route and method -->
-      <form action="{{ url_for('edit_profile') }}" method="post">
-        <!-- CSRF placeholder (if using Flask-WTF, otherwise remove) -->
-        <input type="hidden" name="_csrf" value="CSRF_TOKEN_HERE">
-
-        <div class="mb-3">
-          <label class="form-label" for="fullName">Username</label>
-          <input id="fullName" name="name" type="text" class="form-control"
-                 value="{{ user.username if user and user.username is defined else '' }}"
-                 placeholder="Alex Shopper">
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="product-main-header">
+        <h1 class="product-title">Edit Profile</h1>
+        <div class="product-average-rating">
+          <span class="rating-score">Update your information</span>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="email">Email</label>
-          <input id="email" name="email" type="email" class="form-control"
-                 value="{{ user.email if user and user.email is defined else '' }}"
-                 placeholder="you@example.com">
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="address">Home address</label>
-          <input id="address" name="address" type="text" class="form-control"
-                 value="{{ user.address if user and user.address is defined else '' }}"
-                 placeholder="123 Main St, 10003">
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Save</button>
-      </form>
-    </main>
+      </div>
+    </div>
   </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="product-details">
+        <div class="store-list-section">
+          <h3 class="store-list-title">Profile Information</h3>
+          
+          <form action="{{ url_for('edit_profile') }}" method="post">
+            <div class="store-preview">
+              <div class="store-item">
+                <div class="store-info">
+                  <div class="mb-3">
+                    <label class="form-label" for="fullName">Full name</label>
+                    <input id="fullName" name="name" type="text" class="form-control"
+                           value="{{ user.username if user and user.username is defined else '' }}"
+                           placeholder="Alex Shopper">
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="store-item">
+              <div class="store-info">
+                <div class="mb-3">
+                  <label class="form-label" for="email">Email</label>
+                  <input id="email" name="email" type="email" class="form-control"
+                         value="{{ user.email if user and user.email is defined else '' }}"
+                         placeholder="you@example.com">
+                </div>
+              </div>
+            </div>
+            
+            <div class="store-item">
+              <div class="store-info">
+                <div class="mb-3">
+                  <label class="form-label" for="address">Home address</label>
+                  <input id="address" name="address" type="text" class="form-control"
+                         value="{{ user.address if user and user.address is defined else '' }}"
+                         placeholder="123 Main St, 10003">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-3">
+              <button type="submit" class="btn btn-success w-100">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% block extra_scripts %}{% endblock %}
