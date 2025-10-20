@@ -1,55 +1,113 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>AppName profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
-<body>
-  <div class="appSim">
-    <header class="header">
-      <a class="btn btn-sm btn-light" href="{{ url_for('show_home') }}">Home</a>
-      <div class="header-title">Your Profile</div>
-      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_profile') }}">Edit</a>
-    </header>
+{% extends "base.html" %}
 
-    <main class="content">
-      <section class="profile-card">
-        <div class="profile-icon ">A</div>
-        <div class="profile-text">
-          <div class="profile-name">{{user.username}}</div>
-          <div class="profile-email">{{user.email}}</div>
-        </div>
-      </section>
+{% block title %}Grocery Saver Profile{% endblock %}
 
-      <section class="list">
-        <div class="list-item">
-          <div class="label">Home address</div>
-          <div class="value">{{user.address}}</div>
+{% block header %}
+<header class="site-header">
+  <div class="container-fluid px-3">
+    <div class="row align-items-center py-2">
+      <!-- Logo -->
+      <div class="col-6">
+        <div class="logo">
+          <h4 class="mb-0">
+            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">Grocery Saver</a>
+          </h4>
         </div>
-        <div class="list-item">
-          <div class="label">other things</div>
-          <div class="value">Placeholder</div>
-        </div>
-      </section>
-
-      <a class="btn btn-outline-danger btn-full logout" href="{{ url_for('logout') }}">Log out</a>
-      
-      <!-- Delete Profile Button -->
-      <form action="{{ url_for('delete_profile') }}" method="post" style="margin-top: 10px;" onsubmit="return confirmDelete()">
-        <button type="submit" class="btn btn-danger btn-full">Delete Profile</button>
-      </form>
-    </main>
+      </div>
+      <!-- Navigation Menu -->
+      <div class="col-6 text-end d-flex justify-content-end align-items-center">
+        <nav class="nav">
+          <a href="{{ url_for('edit_profile') }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        </nav>
+      </div>
+    </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function confirmDelete() {
-      return confirm('Are you sure you want to delete your profile? This action cannot be undone.');
-    }
-  </script>
-  {#<script src="../assets/js/main.js"></script>#}
-</body>
-</html>
+</header>
+{% endblock %}
+
+{% block search_bar %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="product-main-header">
+        <h1 class="product-title">Your Profile</h1>
+        <div class="product-average-rating">
+          <span class="rating-score">Manage your account</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="product-details">
+        <!-- Profile Card -->
+        <div class="store-list-section">
+          <h3 class="store-list-title">Profile Information</h3>
+          
+          <div class="store-preview">
+            <div class="store-item">
+              <div class="store-info">
+                <h4>{{ user.username }}</h4>
+                <div class="store-price">{{ user.email }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="store-item">
+            <div class="store-info">
+              <h4>Home Address</h4>
+              <div class="store-price">{{ user.address }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="store-list-section">
+          <h3 class="store-list-title">Account Actions</h3>
+          
+          <div class="store-preview">
+            <div class="store-item">
+              <a href="{{ url_for('edit_profile') }}">
+                <div class="store-info">
+                  <h4>Edit Profile</h4>
+                  <div class="store-price">Update your account information</div>
+                </div>
+              </a>
+            </div>
+            <div class="store-item">
+              <a href="{{ url_for('logout') }}">
+                <div class="store-info">
+                  <h4>Log Out</h4>
+                  <div class="store-price">Sign out of your account</div>
+                </div>
+              </a>
+            </div>
+          </div>
+          
+          <div class="store-item">
+            <form action="{{ url_for('delete_profile') }}" method="post" onsubmit="return confirmDelete()" class="m-0">
+              <button type="submit" class="w-100 p-0 border-0 bg-transparent text-start">
+                <div class="store-info border border-danger rounded text-danger p-2">
+                  <h4 class="m-0">Delete Profile</h4>
+                  <div class="store-price">Permanently delete your account</div>
+                </div>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function confirmDelete() {
+  return confirm('Are you sure you want to delete your profile? This action cannot be undone.');
+}
+</script>
+{% endblock %}
