@@ -29,12 +29,29 @@
         <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
           <div class="form-section">
             <label for="product">Product Name:</label>
+            {% if lock_p %}
+            <input type="text" id="product" name="product" value = "{{ product }}" readonly>
+            {% else %}
             <input type="text" id="product" name="product" placeholder="e.g., Organic Bananas" required>
+            {% endif %}
           </div>
 
           <div class="form-section">
             <label for="store">Store Name:</label>
+            {% if lock_s %}
+            <input type="text" id="store" name="store" value="{{ store }}" readonly>
+            {% else %}
             <input type="text" id="store" name="store" placeholder="e.g., Whole Foods Market" required>
+            {% endif %}
+          </div>
+
+          <div class="form-section">
+            <label for="address">Address:</label>
+            {% if lock_s %}
+            <input type="text" id="address" name="address" value = "{{address}}" readonly>
+            {% else %}
+            <input type="text" id="address" name="address" placeholder="e.g., 123 Main St" required>
+            {% endif %}
           </div>
 
           <div class="form-section">
