@@ -1,34 +1,32 @@
-{% extends "base.html" %}
-
-{% block title %}Grocery Saver Home{% endblock %}
-
-{% block header %}
-<header class="site-header">
-  <div class="container-fluid px-3">
-    <div class="row align-items-center py-2">
-      <!-- Logo -->
-      <div class="col-6">
-        <div class="logo">
-          <h4 class="mb-0">
-            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">Grocery Saver</a>
-          </h4>
-        </div>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AppName Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+  <div class="appSim">
+    <header class="header">
+      <div class="header-title">
+        <a  class = "text-decoration-none text-dark" href="{{ url_for('show_home') }}">Grocery Saver App </a>
       </div>
-      <!-- Navigation Menu -->
-      <div class="col-6 text-end d-flex justify-content-end align-items-center">
-        <nav class="nav">
-          {% if current_user.is_authenticated %}
-          <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Profile</a>
-          {% else %}
-          <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login</a>
-          <a href="{{ url_for('register') }}" class="btn btn-sm btn-outline-primary ms-2">Register</a>
-          {% endif %}
-        </nav>
+      <div class = "header-buttons nav">
+        {% if current_user.is_authenticated %}
+        <a class="btn btn-sm btn-outline-primary " href="{{ url_for('profile') }}">Profile</a>
+        {% else %}
+	      <a class="btn btn-sm btn-outline-primary " href="{{ url_for('login') }}">Login</a>
+      	<a class="btn btn-sm btn-outline-primary " href="{{ url_for('register') }}">Register</a>
+        {% endif %}
       </div>
-    </div>
-  </div>
-</header>
-{% endblock %}
+    </header>
+
+    <main class="content">
+      <h1 class="h5 page-greeting">Welcome to the Grocery Saver App</h1>
+      <p class="muted-note">Select what you would like to do below</p>
 
 {% block search_bar %}{% endblock %}
 
