@@ -1,48 +1,48 @@
 import os
-import datetime
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from models import User
+import random
+from geopy.geocoders import Nominatim
+from geopy.distance import geodesic
 
 load_dotenv()
 login_manager = LoginManager()
-
-mongo_user = os.getenv("MONGO_USER")
-mongo_pass = os.getenv("MONGO_PASS")
-mongo_host = os.getenv("MONGO_HOST")
-mongo_port = os.getenv("MONGO_PORT")
-mongo_db = os.getenv("MONGO_DB")
-SECRET_KEY = os.getenv("SECRET_KEY")
-
+login_manager.login_view = 'login'
 def create_app():
     app = Flask(__name__)
-    app.secret_key = SECRET_KEY
+    # load flask config from env variables
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
 
+    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+    db = cxn[os.getenv("MONGO_DBNAME", "grocery_demo")]
+
+    app.db = db
+
     @login_manager.user_loader
     def load_user(user_id):
-        db_user = db.users.find_one({"_id": ObjectId(user_id)})
-        return User(db_user)
-    mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
-    cxn = pymongo.MongoClient(mongo_uri)
-    db = cxn[mongo_db]
-    # check if connected to database
+        db_user = app.db.users.find_one({"_id": ObjectId(user_id)})
+        return User(db_user) if db_user else None
+    
     try:
         cxn.admin.command("ping")
-        print(" *", "Connected to MongoDB!")
+        print(" * Connected to MongoDB!")
+        print(" * Using DB:", app.db.name)
+        print(" * Users count:", app.db.users.count_documents({}))
     except Exception as e:
         print(" * MongoDB connection error:", e)
+
     
     @app.route("/")
     def show_home():
         return render_template("pages/home.html")
     
-    # i'm still working on how to use hash here
     @app.route('/login', methods=['GET', 'POST'])
     def login():
         if request.method == "POST":
@@ -63,7 +63,7 @@ def create_app():
                 user = User(db_email)
                 login_user(user)
                 flash('Logged in successfully.')
-                return redirect(url_for("profile", user = user))
+                return redirect(url_for("search"))
             else:
                 print("Wrong password!")
                 return render_template("pages/login.html")
@@ -88,12 +88,8 @@ def create_app():
                 print("Please fill in all fields!")
                 return render_template("pages/register.html")
             
-            db_user = db.users.find_one({"username": username}) # since we have email maybe allow same username?
             db_email = db.users.find_one({"email": email})
-            if db_user:
-                print("Username already exists!")
-                return render_template("pages/register.html")
-            elif db_email:
+            if db_email:
                 print("Email already registered!")
                 return render_template("pages/register.html")
             
@@ -102,9 +98,13 @@ def create_app():
                 "email": email,
                 "password": password,
             })
-            db.users.insert_one(new_user)
+            doc = db.users.insert_one(new_user)
 
-            return redirect(url_for("profile"), user = User(db_user))
+            user_doc = db.users.find_one({"_id": doc.inserted_id})
+            user = User(user_doc)
+            login_user(user)
+
+            return redirect(url_for("search"))
         return render_template("pages/register.html")
     
     @app.route("/profile")
@@ -112,11 +112,48 @@ def create_app():
     def profile():
         return render_template("pages/profile.html", user = current_user)
     
-    @app.route("/edit_profile", methods = ["GET", "POST"])# not sure about the name
+    @app.route("/edit_profile", methods = ["GET", "POST"])
     @login_required
     def edit_profile():
-        #do stuff (not sure what we plan to do here?)
-        return render_template("pages/edit_profile.html", user = current_user)
+        if request.method == "POST":
+            name = (request.form.get("name") or current_user.username)
+            email = (request.form.get("email") or current_user.email)
+            address = (request.form.get("address") or getattr(current_user, "address", ""))
+
+            geolocator = Nominatim(user_agent='user_locator')
+            location = geolocator.geocode(address)
+
+            if location is None:
+                error = "Could not find that address. Please enter address again."
+                return render_template("pages/edit_profile.html", error=error, name=name, email=email, address=address)
+
+            user_lat = location.latitude
+            user_long = location.longitude
+
+            db.users.update_one({
+                "_id": ObjectId(current_user.id)
+            },
+            {"$set":{
+                "username": name,
+                "email": email,
+                "address": address,
+                "user_lat":user_lat,
+                "user_long":user_long
+            }})
+
+            stores = db.stores.find()
+            for store in stores:
+                store_lat = store.get("store_lat")
+                store_long = store.get("store_long")
+                if store_lat is not None and store_long is not None:
+                    distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+                    db.stores.update_one(
+                        {"_id": store["_id"]},
+                        {"$set": {"distance": distance}}
+                    )
+            return redirect(url_for("profile"))
+        
+        return render_template("pages/edit_profile.html", user=current_user)
     
     @app.route("/profile", methods = ["POST"])
     @login_required
@@ -128,51 +165,149 @@ def create_app():
     @app.route("/store/<sid>")
     def store(sid):
         store = db.stores.find_one({"_id": ObjectId(sid)})
+        print(store)
         if not store:
-            #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("pages/store.html", store = store)
-    
-    @app.route("/store/<sid>", methods = ["POST"])
-    @login_required
-    def rating_s():
-        # do stuff
-        return render_template("pages/store.html", store = store)
+        
+        # compute average rating
+        all_r = list(db.ratings.find({"type": "store", "target_id": ObjectId(sid)}, {"_id": 0, "user_id":1, "rating": 1,}))
+        ratings = [r.get("rating") for r in all_r if "rating" in r]
+        avg_r = round(sum(ratings) / len(ratings), 2) if ratings else None
+        num_r = len(ratings)
+
+        # take comments out with ratings
+        all_c = list(db.ratings.find(
+            {"type": "store", "target_id": ObjectId(sid)},
+            {"_id": 0, "user_id": 1, "rating": 1, "comment": 1, "updated_at": 1}
+        ))
+        # Attach username to each review
+        for r in all_c:
+            user = db.users.find_one({"_id": r["user_id"]}, {"username": 1})
+            r["username"] = user["username"] if user else "Anonymous"
+
+        #all products of the store
+        p_list = list(db.products.find({"store": store["name"]}))
+
+        return render_template("pages/store.html", store = store, sid = sid, avg_r = avg_r, num_r = num_r, r = ratings, products = p_list, reviews = all_c)
     
     @app.route("/product/<product_id>")
     def product(product_id):
         product = db.products.find_one({"_id": ObjectId(product_id)})
         if not product:
-            #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("pages/product.html", product = product)
+        
+        s_list = list(db.stores.find({"product": product["name"]}))
+
+        return render_template("pages/product.html", product = product, stores = s_list)
     
-    @app.route("/product/<product_id>", methods = ["POST"])
+    @app.route("/product/<product_id>/<sid>")
+    def store_product(product_id, sid):
+        product = db.products.find_one({"_id": ObjectId(product_id)})
+        store = db.stores.find_one({"_id": ObjectId(sid)})
+        if not product or not store:
+            return redirect(request.referrer)
+        
+        # compute average rating
+        all_r = list(db.ratings.find({"type": "product", "target_id": ObjectId(product_id)}, {"_id": 0, "user_id":1, "rating": 1,}))
+        ratings = [r.get("rating") for r in all_r if "rating" in r]
+        avg_r = round(sum(ratings) / len(ratings), 2) if ratings else None
+        num_r = len(ratings)
+
+        # take comments out with ratings
+        all_c = list(db.ratings.find(
+            {"type": "product", "target_id": ObjectId(product_id)},
+            {"_id": 0, "user_id": 1, "rating": 1, "comment": 1, "updated_at": 1}
+        ))
+        # Attach username to each review
+        for r in all_c:
+            user = db.users.find_one({"_id": r["user_id"]}, {"username": 1})
+            r["username"] = user["username"] if user else "Anonymous"
+
+        return render_template("pages/store_product.html", product = product, store = store, avg_r = avg_r, num_r = num_r, r = ratings, reviews = all_c, product_id = product_id, sid = sid)
+
+    @app.route("/rating/<target>/<target_id>", methods = ["POST"])
     @login_required
-    def rating_p():
-        # do stuff
-        return render_template("pages/product.html", product = product)
-    
-    # I feel like we should do a rating handler and implement it in both for product and store instead of doing the same logic twice
+    def rating(target, target_id):
+        r = int(request.form.get("rating", 0))
+        c = request.form.get("comment", "").strip()
+        if r < 1 or r > 5:
+            flash("Invalid rating value!")
+            return redirect(request.referrer)
+        
+        db.ratings.update_one(
+            {"user_id": ObjectId(current_user.id), 
+             "type": target, 
+             "target_id": ObjectId(target_id)},
+            {
+                "$set": {
+                    "rating": r,
+                    "comment": c,
+                    "updated_at": datetime.utcnow(),
+                },
+                "$setOnInsert": {
+                    "user_id": ObjectId(current_user.id),
+                    "type": target,
+                    "target_id": ObjectId(target_id),
+                    "created_at": datetime.utcnow()},
+            },
+            upsert=True,
+        )
+
+        flash("Thank you for your feedback!")
+        if target == "store":
+            return redirect(url_for("store", sid = target_id))
+        if target == "product":
+            sid = request.form.get("sid")
+            if sid:
+                return redirect(url_for("store_product", product_id=target_id, sid=sid))
+            return redirect(request.referrer)
+        return redirect(request.referrer)
     
     @app.route("/search")
     def search():
         query = request.args.get("q")
-        result = None
+        # by store/ product
+        store = request.args.get("s") == "on"
+        product = request.args.get("p") =="on"
+        # by price (budget)
+        budget = request.args.get("b", type=float)
+        # by distance
+        distance = request.args.get("d", type=float)
+
+        name_filter = {"name": {"$regex": query, "$options": "i"}} 
+
         if query:
-            #TODO: find closest match to query
-            result_s = list(db.stores.find({"name": query})) 
-            result_p = list(db.products.find({"name": query}))
-            result = result_s + result_p
+            result_s = list(db.stores.find(name_filter))
+            for s in result_s:
+                s["type"] = "store"
+                s["id"] = str(s["_id"])
+            result_p = list(db.products.find(name_filter))
+            for p in result_p:
+                p["type"] = "product"
+                p["id"] = str(p["_id"])
+            if store == product:
+                result = result_s + result_p
+            elif store:
+                result = result_s
+            elif product:
+                result = result_p
+
+            # check budget and distance
+            if budget is not None:
+                result = [r for r in result if (r["type"] == "store") or (r.get("price", float("inf")) <= budget)] 
+            if distance is not None:
+                store_distance = {
+                    s["name"]: s.get("distance", float("inf")) for s in db.stores.find({}, {"_id": 0, "name": 1, "distance": 1})
+                }
+                result = [
+                    r for r in result if (
+                        r.get("distance", float("inf")) < distance
+                        or store_distance.get(r.get("store"), float("inf")) < distance
+                    )
+                ]
             return render_template("pages/search.html", query = query, result = result)
         # On first render, did not query yet
-        return render_template("pages/search.html", query = None, result = result)
-
-    
-    @app.route("/filter")
-    def filter():
-        # do stuff
-        return render_template("pages/search.html")
+        return render_template("pages/search.html", query = None, result = None)
     
     # something's wrong with this one I still need to figure it out
     @app.route("/upload",  methods = ["GET", "POST"]) 
@@ -182,22 +317,26 @@ def create_app():
             product = request.form.get("product")
             store = request.form.get("store")
             price = request.form.get("price")
+            address = request.form.get("address")
             proof = request.form.get("proof")
+
+            geolocator = Nominatim(user_agent='store_locator')
+            location = geolocator.geocode(address)
+
+            if location is None:
+                error = "Could not find that address. Please enter address again."
+                return render_template("pages/upload.html", name=name, email=email, price=price, proof=proof)
+            #distance = random.uniform(0, 20)
             
             db_p = db.products.find_one({"name": product})
             db_s = db.stores.find_one({"name": store})
 
-            # Check if product in store inventory
-            # If it is, then update with most recent p
-            #if db_p._id in db_s.inventory:
-                
-            
             if not db_p:
                 # if no such product
                 p = {
                     "name" : product,
                     "store" : store,
-                    "price" : price,
+                    "price" : float(price),
                     "img" : proof,
                     }
                 db.products.insert_one(p)
@@ -205,15 +344,23 @@ def create_app():
                 s = {
                     "name" : store,
                     "product" : product,
-                    "price" : price,
+                    "price" : float(price),
+                    "address": address,
+                    "store_long" : location.longitude,
+                    "store_lat":location.latitude,
                     "img" : proof,
                 }
                 db.stores.insert_one(s)
 
             return redirect(url_for("search"))
+        store = ''
+        return render_template("pages/upload.html",store=store)
 
-        return render_template("pages/upload.html")
-    
+    @app.errorhandler(Exception)
+    def handle_error(e):
+        # Use the code if it's an HTTPException, otherwise default to 500
+        return render_template("pages/error.html", error_code=e)
+   
     return app
 
 app = create_app()

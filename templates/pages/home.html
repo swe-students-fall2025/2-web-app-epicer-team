@@ -13,8 +13,12 @@
     <header class="header">
       <div class="header-title">Grocery Saver App Name</div>
       <div>
-	<a class="btn btn-sm btn-outline-primary " href="{{ url_for('login') }}">Login</a>
+        {% if current_user.is_authenticated %}
+        <a class="btn btn-sm btn-outline-primary " href="{{ url_for('profile') }}">Profile</a>
+        {% else %}
+	      <a class="btn btn-sm btn-outline-primary " href="{{ url_for('login') }}">Login</a>
       	<a class="btn btn-sm btn-outline-primary " href="{{ url_for('register') }}">Register</a>
+        {% endif %}
       </div>
     </header>
 
@@ -30,9 +34,14 @@
     <nav class="bottom-nav">
       <div class="bottom-nav-actions">
         <a class="btn btn-outline-primary w-50" href="{{ url_for('show_home') }}">Home</a>
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('profile') }}">Profile</a>
+        {#
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('product', product_id = product._id) }}">product</a>
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('store', sid = store._id) }}">store</a>
+        #}
         <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">search</a>
+        {% if current_user.is_authenticated %}
         <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">upload</a>
+        {% endif %}
       </div>
     </nav>
   </div>

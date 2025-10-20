@@ -6,84 +6,86 @@
   <title>Upload Product | App Name</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/style_mz.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 <body>
   <div class="appSim">
 
   <div class="container">
-    <div class="upload-container mt-4">
-      <!-- Back Button -->
-      <button class="btn btn-outline-secondary back-btn" onclick="goBack()">← Back</button>
-
-      <h3 class="mb-3 text-center text-primary">Upload Product Info</h3>
-
-      <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
-  <!-- Store -->
-  <div class="form-section">
-    <label for="store" class="form-label">Store</label>
-    <input type="text" name="store" id="store" class="form-control" placeholder="Search or auto-filled store name" required>
-  </div>
-
-  <!-- Product -->
-  <div class="form-section">
-    <label for="product" class="form-label">Product</label>
-    <input type="text" name="product" id="product" class="form-control" placeholder="Search or auto-filled product name" required>
-  </div>
-
-  <!-- Price -->
-  <div class="form-section">
-    <label for="price" class="form-label">Price (per lb)</label>
-    <input type="number" name="price" id="price" class="form-control" placeholder="Enter price" min="0" step="0.01" required>
-  </div>
-
-  <!-- Stock -->
-  <div class="form-section">
-    <label for="stock" class="form-label">In Stock</label>
-    <select name="stock" id="stock" class="form-select">
-      <option value="yes">Yes</option>
-      <option value="no">No</option>
-    </select>
-  </div>
-
-  <!-- Image Upload -->
-  <div class="form-section">
-    <label for="image" class="form-label">Upload Product Image (optional)</label>
-    <input type="file" name="image" id="image" class="form-control" accept="image/*" onchange="previewImage(event)">
-    <img id="img-preview" class="preview-img" alt="Image preview">
-  </div>
-
-  <!-- Submit -->
-  <button type="submit" class="btn btn-primary submit-btn">Submit</button>
-</form>
-
-      <div class="alert alert-success text-center mt-3" id="success-alert" role="alert">
-        Thank you for contributing! Your info has been uploaded.
+    <header class="header-container">
+      <div class="logo">
+        <h1 class="header-title">Upload Product</h1>
       </div>
-    </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="{{ url_for('show_home') }}">Home</a></li>
+          <li><a href="{{ url_for('profile') }}">Profile</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="content">
+      <div class="upload-container">
+        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+          <div class="form-section">
+            <label for="product">Product Name:</label>
+            <input type="text" id="product" name="product" placeholder="e.g., Organic Bananas" required>
+          </div>
+
+          <div class="form-section">
+            <label for="store">Store Name:</label>
+            <input type="text" id="store" name="store" placeholder="e.g., Whole Foods Market" value="{{ store or '' }}"required>
+          </div>
+
+          <div class="form-section">
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" placeholder="" required>
+          </div>
+
+          <div class="form-section">
+            <label for="price">Price:</label>
+            <input type="text" id="price" name="price" placeholder="e.g., $2.99/lb" required>
+          </div>
+
+          <div class="form-section">
+            <label for="proof">Upload Receipt/Proof:</label>
+            <input type="file" id="proof" name="proof" accept="image/*" onchange="previewImage(this)">
+            <img id="preview" class="preview-img" alt="Preview">
+          </div>
+
+          <button type="submit" class="submit-btn">Upload Product</button>
+        </form>
+
+        <div class="alert-success" id="successAlert">
+          Product uploaded successfully!
+        </div>
+      </div>
+    </main>
   </div>
 
   <script>
-    function goBack() {
-      if (document.referrer) window.history.back();
-      else window.location.href = "pages/search.html";
-    }
-
-    function previewImage(event) {
-      const file = event.target.files[0];
-      const preview = document.getElementById('img-preview');
+    function previewImage(input) {
+      const preview = document.getElementById('preview');
+      const file = input.files[0];
+      
       if (file) {
-        preview.src = URL.createObjectURL(file);
-        preview.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
       } else {
-        preview.src = '';
         preview.style.display = 'none';
       }
     }
 
+    // Show success message if redirected from successful upload
+    if (window.location.search.includes('success=true')) {
+      document.getElementById('successAlert').style.display = 'block';
+    }
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </div>
 </body>
 </html>

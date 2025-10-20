@@ -1,144 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Store Page</title>
+    <title>Product Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
-
 <body>
     <div class="appSim">
-    <header class="site-header">
-        <div class="container-fluid px-3">
-            <div class="row align-items-center py-2">
-                <!-- Logo -->
-                <div class="col-6">
-                    <div class="logo">
-                        <h4 class="mb-0">
-                            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
-                        </h4>
-                    </div>
-                </div>
-                <!-- Navigation Menu -->
-                <div class="col-6 text-end">
-                    <nav class="nav">
-                        {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
-                        {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login/Register</a>
-                        {% endif %}
-                    </nav>
-                </div>
-            </div>
-            <!-- Search Bar -->
-            <div class="row">
-                <div class="col-12">
-                    <form class="search-form" action="{{ url_for('search') }}" method="get">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search items..." name="q">
-                            <button type="submit" class="btn btn-primary">
-                                Search
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+      <header class="site-header">
+    <div class="container-fluid px-3">
+      <div class="row align-items-center py-2">
+        <!-- Logo -->
+        <div class="col-6">
+          <div class="logo">
+            <h4 class="mb-0">
+              <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+            </h4>
+          </div>
         </div>
-    </header>
+        <!-- Navigation Menu -->
+        <div class="col-6 text-end d-flex justify-content-end align-items-center">
+          <nav class="nav">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login/Register</a>
+            {% endif %}
+          </nav>
+        </div>
+      </div>
+      <!-- Search Bar -->
+      <div class="row">
+        <div class="col-12">
+          <form class="search-form" action="{{ url_for('search') }}" method="get">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search items..." name="q">
+              <button type="submit" class="btn btn-primary">
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
 
     <div class="container-fluid px-3">
-        <!-- Store Header -->
-        <div class="row">
+        <!-- Product Image -->
+        <div class="row mb-3">
             <div class="col-12">
-                <div class="product-main-header">
-                    <h1 class="product-title">{{ store.name }}</h1>
-                    <div class="product-average-rating">
-                        {% if avg_r is none or num_r == 0 %}
-                        <span class="text-muted">No ratings yet</span>
-                        {% else %}
-                        <span class="rating-stars-display">
-                            {% for i in range(1, 6) %}
-                                {% if avg_r >= i %}
-                                ★
-                                {% elif avg_r >= i - 0.5 %}
-                                ☆
-                                {% else %}
-                                ☆
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                        <span class="rating-score">{{avg_r}}</span>
-                        <span class="rating-count">({{num_r}} ratings)</span>
-                        {% endif %}
+                <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 1">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 2">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="product.jpg" class="d-block w-100 carousel-img" alt="Product image 3">
+                        </div>
                     </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </div>
         </div>
         
-        <!-- Store Details -->
+        <!-- Product Details -->
         <div class="row">
             <div class="col-12">
                 <div class="product-details">
-                    
-                    <!-- Store info -->
-                    <div class="store-info mb-3">
-                        <div class="info-item mb-2">
-                            <strong>Distance:</strong> {{ store.get('distance', 'Please enter your location in your profile') }} km away
+                    <div class="product-header">
+                        <h1 class="product-title mb-2">{{product.name}}</h1>
+                        
+                        
+                        <div class="product-average-rating mb-2">
+                            {% if avg_r is none or num_r == 0 %}
+                            <span class="text-muted">No ratings yet</span>
+                            {% else %}
+                            <span class="rating-stars-display">
+                                {% for i in range(1, 6) %}
+                                    {% if avg_r >= i %}
+                                    ★
+                                    {% elif avg_r >= i - 0.5 %}
+                                    ☆
+                                    {% else %}
+                                    ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="rating-score">{{avg_r}}</span>
+                            <span class="rating-count">({{num_r}} ratings)</span>
+                            {% endif %}
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Product List Section -->
-                <div class="store-list-section">
-                    <h3 class="store-list-title">Available Products</h3>
-                    {% if products %}
-                    <div class="store-preview">
-                    <div class="store-item">
-                        <a href="{{ url_for('store_product', product_id=products[0]['_id'], sid = sid) }}">
-                        <div class="store-info">
-                            <h4>{{ products[0].name }}</h4>
-                            <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
+                        <div class="price-update-row d-flex justify-content-between align-items-center mb-3">
+                            <p class="price h4 text-primary mb-0">${{product.price}} / lb</p>
+                            <a href="{{ url_for('upload') }}?store=Whole%20Foods%20Market" class="update-price-link">Update Price</a>
                         </div>
-                        </a>
-                    </div>
-                    </div>
-
-                    <!-- Collapsible list for the rest -->
-                    <div class="store-list-collapsible" id="productListCollapsible">
-                    {% for p in products[1:] %}
-                        <div class="store-item">
-                        <a href="{{ url_for('product', product_id=products[0]['_id'], sid=sid) }}">
-                            <div class="store-info">
-                            <h4>{{ p.name }}</h4>
-                            <div class="store-price">
-                                ${{ '%.2f'|format(p.get('price', 0)) }}
-                            </div>
-                            </div>
-                        </a>
+                        
+                        <div class="store-info mb-3">
+                            <strong>Sold by:</strong> 
+                            <a href="{{ url_for('store', sid = sid) }}" class="store-link">{{store.name}}</a>
+                            <span class="distance">• {{store.distance}} km away</span>
                         </div>
-                    {% endfor %}
-                    </div>
-
-                    <div class="expand-button-container">
-                    <button class="expand-button" onclick="toggleProductList()">
-                        <span class="expand-text">Expand all products available</span>
-                        <span class="expand-icon">▼</span>
-                    </button>
-                    </div>
-                {% else %}
-                    <div class="text-muted">No products listed for this store yet.</div>
-                {% endif %}
-                
-                <!-- Upload Prompt Section -->
-                <div class="upload-prompt-section">
-                    <div class="upload-prompt-content">
-                        <p class="upload-prompt-text">Can't find what you're looking for?</p>
-                        <a href="{{ url_for('upload') }}" class="upload-prompt-btn">Upload New Product</a>
                     </div>
                 </div>
                 
@@ -224,9 +197,9 @@
                 
                 <!-- Rating & Comment Section -->
                 <div class="rating-section">
-                    <h5 class="mb-3">Rate & Review this store</h5>
-                    <form action="{{ url_for('rating', target = 'store', target_id = sid) }}" method="post">
-
+                    <h5 class="mb-3">Rate & Review this product</h5>
+                    <form action="{{ url_for('rating', target = 'product', target_id = product_id) }}" method="post">
+                        <input type="hidden" name="sid" value="{{ sid }}">
                         <div class="rating-stars mb-3">
                         <input type="radio" id="star5" name="rating" value="5">
                         <label for="star5">★</label>
@@ -243,7 +216,7 @@
                         <div class="comment-section mb-3">
                             <label for="comment" class="form-label">Your Review:</label>
                             <textarea class="form-control" id="comment" name="comment" rows="4" 
-                                placeholder="Share your experience with this store..."></textarea>
+                                placeholder="Share your experience with this product..."></textarea>
                         </div>
 
                         <button type="submit" class="submit-review-btn btn btn-success w-100">
@@ -254,31 +227,13 @@
             </div>
         </div>
     </div>
-    </div>
 
 <script>
-function toggleProductList() {
-    const collapsible = document.getElementById('productListCollapsible');
-    const expandText = document.querySelector('.expand-text');
-    const expandIcon = document.querySelector('.expand-icon');
-    
-    if (collapsible.style.display === 'none' || collapsible.style.display === '') {
-        collapsible.style.display = 'block';
-        expandText.textContent = 'Collapse all products';
-        expandIcon.textContent = '▲';
-    } else {
-        collapsible.style.display = 'none';
-        expandText.textContent = 'Expand all products available';
-        expandIcon.textContent = '▼';
-    }
-}
-
 function toggleCommentList() {
     const collapsible = document.getElementById('commentListCollapsible');
-    const expandButtons = document.querySelectorAll('.expand-button');
-    const commentExpandButton = expandButtons[1]; // Second expand button (for comments)
-    const expandText = commentExpandButton.querySelector('.expand-text');
-    const expandIcon = commentExpandButton.querySelector('.expand-icon');
+    const expandButton = document.querySelector('.expand-button');
+    const expandText = expandButton.querySelector('.expand-text');
+    const expandIcon = expandButton.querySelector('.expand-icon');
     
     if (collapsible.style.display === 'none' || collapsible.style.display === '') {
         collapsible.style.display = 'block';
@@ -291,10 +246,9 @@ function toggleCommentList() {
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
-    const productCollapsible = document.getElementById('productListCollapsible');
     const commentCollapsible = document.getElementById('commentListCollapsible');
-    productCollapsible.style.display = 'none';
     commentCollapsible.style.display = 'none';
 });
 </script>

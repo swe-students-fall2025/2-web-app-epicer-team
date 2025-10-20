@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error {{ error_code }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1 { font-size: 48px; color: #e74c3c; }
+        p { font-size: 20px; color: #333; }
+        a.button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        a.button:hover { background-color: #2980b9; }
+    </style>
+</head>
+<body>
+    <h1>Error {{ error_code }}</h1>
+    <p>Something went wrong.</p>
+    <a class="button" href="{{ url_for('show_home') }}">Back to Home</a>
+</body>
+</html>

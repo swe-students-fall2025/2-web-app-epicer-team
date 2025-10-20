@@ -2,91 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Search Page</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/style_mz.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
-
 
 <body>
   <div class="appSim">
-  <header class="site-header mb-4">
-    <div class="container d-flex justify-content-between align-items-center py-3">
-      <!-- Logo -->
-      <div class="logo">
-        <h1 class="mb-0">
-          <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
-        </h1>
-      </div>
-      <!-- Navigation Menu -->
-      <nav class="nav">
-        <ul class="list-inline mb-0">
-          <li class="list-inline-item">
-            <a href="{{ url_for('profile') }}" class="btn btn-link">Your Account</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-    <!-- Search Bar -->
-    <form class="d-flex search-form" action="{{ url_for('search') }}" method="get">
-
-      <input type="text" class="form-control me-2" placeholder="Search for grocery items..." name="q">
-      <button type="submit" class="btn btn-outline-primary">Search</button>
-    </form>
-  </header>
-  
-  <!-- Filter Bar -->
-  <div class="filter-bar d-flex justify-content-between align-items-center py-3 px-4 bg-light border-bottom">
-    <div class="filter-left">
-      <h5 class="mb-2">Search by</h5>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="store" value="amazon-fresh" id="amazonFresh" checked>
-        <label class="form-check-label" for="amazonFresh">Price</label>
-      </div>
-      <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="store" value="whole-foods" id="wholeFoods">
-        <label class="form-check-label" for="wholeFoods">Distance</label>
-      </div>
-    </div>
-  </div>
-
-  <!--search result-->
-  <div class="search-results">
-  <h2>Search Results</h2>
-  {% if query %}
-    <div class="results-list">
-      {% if result and result|length > 0 %}
-        <div class="results-list">
-          {% for item in result %}
-              <div class="result-item">
-                <a href="product.html">
-                  <div class="result-info">
-                    <h4>{{ item.get('name') }}</h4>
-                    <p>★★★★☆ (4.7)</p>
-                    <p class="price">$4.99 / lb</p>
-                  </div>
-                </a>
+    <header class="site-header">
+      <div class="container-fluid px-3">
+        <div class="row align-items-center py-2">
+          <!-- Logo -->
+          <div class="col-6">
+            <div class="logo">
+              <h4 class="mb-0">
+                <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
+              </h4>
+            </div>
+          </div>
+          <!-- Navigation Menu -->
+          <div class="col-6 text-end d-flex justify-content-end align-items-center">
+            <nav class="nav">
+              {% if current_user.is_authenticated %}
+              <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
+              {% else %}
+              <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login/Register</a>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+        <!-- Search Bar -->
+        <div class="row">
+          <div class="col-12">
+            <form class="search-form" action="{{ url_for('search') }}" method="get">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search items..." name="q" value="{{ request.args.get('q','') }}">
+                <!-- carry filters -->
+                {% if request.args.get('s') %}<input type="hidden" name="s" value="on">{% endif %}
+                {% if request.args.get('p') %}<input type="hidden" name="p" value="on">{% endif %}
+                {% if request.args.get('b') %}<input type="hidden" name="b" value="{{ request.args.get('b') }}">{% endif %}
+                {% if request.args.get('d') %}<input type="hidden" name="d" value="{{ request.args.get('d') }}">{% endif %}
+                <button type="submit" class="btn btn-primary">
+                  Search
+                </button>
               </div>
-          {% endfor %}
-      {% else %}
-        <p>No results found for "<strong>{{ query }}</strong>"</p>
-      {% endif %}
-  {% else %}
-    <p>Enter your search in the search bar to begin searching!</p>
-  {% endif %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+  
+    <div class="container-fluid px-3">
+      <!-- Filter Bar -->
+      <form action="{{ url_for('search') }}" method="get" class="search-form filter-bar d-flex flex-column gap-2 p-3 border rounded bg-light">
+        <input type="hidden" name="q" value="{{ request.args.get('q','') }}">
+        <h5 class="mb-1">Filter</h5>
+        <!-- Toggle store / product -->
+        <div class="filter-left mt-2">
+          <strong>Include:</strong>
+          <label class="ms-2">
+            <input type="checkbox" name="s" {% if request.args.get('s') or not request.args %}checked{% endif %}> Stores
+          </label>
+          <label class="ms-2">
+            <input type="checkbox" name="p" {% if request.args.get('p') or not request.args %}checked{% endif %}> Products
+          </label>
+        </div>
+
+        <!-- Budget and distance filters -->
+        <div class="d-flex flex-wrap gap-3 align-items-center">
+          <label class="mb-0">Max budget $
+            <input type="number" step="0.01" name="b" class="form-control d-inline-block w-auto"
+                  value="{{ request.args.get('b','') }}" style="width:110px;">
+          </label>
+          <label class="mb-0">Max distance (km)
+            <input type="number" step="0.1" name="d" class="form-control d-inline-block w-auto"
+                  value="{{ request.args.get('d','') }}" style="width:130px;">
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <div class="mt-2">
+          <button type="submit" class="btn btn-primary">Apply Filter</button>
+        </div>
+      </form>
+
+      <!-- Search Results -->
+      <div class="search-results">
+        <h2>Search Results</h2>
+        {% if query %}
+          {% if result and result|length > 0 %}
+            <div class="results-list d-grid gap-2">
+              {% for item in result %}
+                {% set t = item.get('type') %}
+                {% if t == 'store' %}
+                  <a href="{{ url_for('store', sid=item.id) }}" class="result-item d-flex p-2 border rounded text-decoration-none text-dark">
+                    <img src="{{ url_for('static', filename='images/store-placeholder.jpg') }}" alt="{{ item.get('name') }}" class="result-img me-3" style="width:64px;height:64px;object-fit:cover;">
+                    <div class="result-info">
+                      <h5 class="mb-1">{{ item.get('name') }}</h5>
+                      <div class="small text-muted">
+                        {{ item.get('address','Address unavailable') }} • {{ item.get('distance','—') }} km
+                      </div>
+                    </div>
+                  </a>
+                {% elif t == 'product' %}
+                  <a href="{{ url_for('product', product_id=item.id) }}" class="result-item d-flex p-2 border rounded text-decoration-none text-dark">
+                    <img src="{{ url_for('static', filename='images/product-placeholder.jpg') }}" alt="{{ item.get('name') }}" class="result-img me-3" style="width:64px;height:64px;object-fit:cover;">
+                    <div class="result-info">
+                      <h5 class="mb-1">{{ item.get('name') }}</h5>
+                      <div class="small">
+                        ${{ '%.2f'|format(item.get('price', 0)) }}{% if item.get('unit') %} / {{ item.unit }}{% endif %}
+                      </div>
+                      <div class="small text-muted">Available at {{ item.get('store','—') }}</div>
+                    </div>
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="no-results">
+              <p>No results found for "<strong>{{ query }}</strong>"</p>
+              <p>Try adjusting your search terms or filters.</p>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
   </div>
 
-  <footer class="row paddingTop">
-
-    <div class="col-md-6">
-      <h5>Developed by Epicer Team</h>
-    </div>
-  </footer>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
