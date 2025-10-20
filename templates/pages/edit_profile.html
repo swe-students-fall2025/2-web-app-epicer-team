@@ -1,34 +1,5 @@
 {% extends "base.html" %}
 
-<body>
-  <div class="appSim">
-    <header class="header ">
-      <a class="btn btn-sm btn-outline-primary navbutton" href="{{ url_for('profile') }}">Cancel</a>
-      <div class="header-title h5 mb-0">Edit Profile</div>
-    </header>
-    <main class="content p-4">
-      <!-- The correct route and method -->
-      <form action="{{ url_for('edit_profile') }}" method="post">
-        <!-- CSRF placeholder (if using Flask-WTF, otherwise remove) -->
-        <input type="hidden" name="_csrf" value="CSRF_TOKEN_HERE">
-
-        <div class="mb-3">
-          <label class="form-label" for="fullName">Username</label>
-          <input id="fullName" name="name" type="text" class="form-control"
-                 value="{{ user.username if user and user.username is defined else '' }}"
-                 placeholder="Alex Shopper">
-        </div>
-      </div>
-      <!-- Navigation Menu -->
-      <div class="col-6 text-end d-flex justify-content-end align-items-center">
-        <nav class="nav">
-          <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-secondary">Cancel</a>
-        </nav>
-      </div>
-    </div>
-  </div>
-</header>
-
 {% block content %}
 <div class="container-fluid px-3">
   <div class="row">
