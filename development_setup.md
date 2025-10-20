@@ -1,29 +1,37 @@
-<!-- TODO: REMOVE THIS WHEN DONE -->
 # SETUP INSTRUCTIONS FOR DEVELOPMENT
-- These instructions are meant for linux and macOS devices. To setup the app on Windows, please use WSL, Cygwin, or any other method of running a \*nix like environment on Windows
 
-1. Install docker and python3 on your local machine. You **must** at least have the docker cli and you must have python3.
+1. **Clone the repository and navigate to the project root**
 
-2. Add the .env file to the root of the project (ask in discord for this)
+2. **Create environment file**
+   - Copy `env.example` to `.env` in the project root
+   - Update the values in `.env` with your specific configuration
+   - Ask in Discord for the production environment variables if needed
 
-3. Go to the root of the project, run the following command, and enter your computer password if prompted:
+3. **Run the setup script**
+   ```bash
+   pipenv shell
+   pipenv install
+   ```
+   This will:
+   - Set up the pipenv virtual environment
+   - Install all dependencies
+
+4. **To start the app, run the following commands:**
 
     ```bash
-    sudo chmod +x setup.sh
-    ./setup.sh
-    ```
-
-4. To start the app, run the following commands:
-
-    ```bash
-    source dev_env/bin/activate
-    flask run
+   python app.py
     ```
 Then go to http://127.0.0.1:5000 in your browser.
 
-5. To stop the app, press Ctrl-C in the flask runtime, go to the root of the project, and run the following commands:
+5. **To stop the app, press Ctrl-C in the flask runtime, go to the root of the project, and run the following commands:**
 
     ```bash
-    ./demo_scripts/demo_stop.sh
     deactivate
     ```
+
+## Troubleshooting
+
+- **MongoDB connection issues**: Ensure Docker is running and the MongoDB container is started
+- **Environment activation issues**: Make sure you're in the project root directory
+- **Permission issues**: You may need to run setup commands with `sudo` on Linux/macOS
+- **Port conflicts**: If port 5000 is in use, set `FLASK_PORT` in your `.env` file to a different port
