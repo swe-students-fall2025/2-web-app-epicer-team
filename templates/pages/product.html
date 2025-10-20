@@ -48,12 +48,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="product-main-header">
-                    <h1 class="product-title">Chicken Breast</h1>
-                    <div class="product-average-rating">
-                        <span class="rating-stars-display">★★★★☆</span>
-                        <span class="rating-score">4.2</span>
-                        <span class="rating-count">(89 reviews)</span>
-                    </div>
+                    <h1 class="product-title">{{product.name}}</h1>
+
                 </div>
             </div>
         </div>
@@ -62,102 +58,90 @@
         <div class="row">
             <div class="col-12">
                 <div class="store-list-section">
-                    <h3 class="store-list-title">Available at these stores:</h3>
-                    
-                    <!-- Store Preview -->
-                    <div class="store-preview">
+                    <h3 class="store-list-title">Available at these stores</h3>
+
+                    {% if stores and stores|length > 0 %}
+
+                        {# -------- Preview: show the first store -------- #}
+                        {% set first = stores[0] %}
+                        <div class="store-preview">
                         <div class="store-item">
-                            <a href="{{ url_for('store') }}">
+                            <a href="{{ url_for('store', sid=first._id|string) }}">
+                            <div class="store-info">
+                                <h4>{{ first.name }}</h4>
+                                {# rating placeholder (replace with real avg if you compute it) #}
+                                <p class="store-rating">★★★★☆</p>
+                                <p class="store-distance">
+                                {{ first.get('distance', '—') }}{% if first.get('distance') is not none %} km away{% endif %}
+                                </p>
+                                <p class="store-price">
+                                {% set price_val = first.get('price', product.get('price')) %}
+                                {% if price_val is not none %}
+                                    ${{ '%.2f'|format(price_val) }}
+                                    {% if product.get('unit') %}/ {{ product.unit }}{% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                                </p>
+                            </div>
+                            </a>
+                            <div class="update-price-tab">
+                            <form action="{{ url_for('upload') }}" method="get" class="d-inline">
+                                <input type="hidden" name="product_id" value="{{ first._id }}">
+                                <input type="hidden" name="sid" value="{{ sid }}">
+                                <button type="submit" class="update-price-btn btn btn-outline-primary">
+                                    Update Price
+                                </button>
+                            </form>
+                            </div>
+                        </div>
+                        </div>
+
+                        {# -------- Collapsible: the rest of the stores -------- #}
+                        {% set rest = stores[1:] %}
+                        <div class="store-list-collapsible" id="storeListCollapsible" style="display:none;">
+                        {% for s in rest %}
+                            <div class="store-item">
+                            <a href="{{ url_for('store', sid=s._id|string) }}">
                                 <div class="store-info">
-                                    <h4>Whole Foods Market</h4>
-                                    <p class="store-rating">★★★★☆ (4.7)</p>
-                                    <p class="store-distance">0.8 km away</p>
-                                    <p class="store-price">$9.99 / lb</p>
+                                <h4>{{ s.name }}</h4>
+                                <p class="store-rating">★★★★☆</p>
+                                <p class="store-distance">
+                                    {{ s.get('distance', '—') }}{% if s.get('distance') is not none %} km away{% endif %}
+                                </p>
+                                <p class="store-price">
+                                    {% set p = s.get('price', product.get('price')) %}
+                                    {% if p is not none %}
+                                    ${{ '%.2f'|format(p) }}{% if product.get('unit') %} / {{ product.unit }}{% endif %}
+                                    {% else %}—{% endif %}
+                                </p>
                                 </div>
                             </a>
                             <div class="update-price-tab">
-                                <button class="update-price-btn" onclick="updatePrice('Whole Foods Market')">
-                                    Update Price
-                                </button>
+                                <form action="{{ url_for('upload') }}" method="get" class="d-inline">
+                                    <input type="hidden" name="product_id" value="{{ p._id }}">
+                                    <input type="hidden" name="sid" value="{{ sid }}">
+                                    <button type="submit" class="update-price-btn btn btn-outline-primary">
+                                        Update Price
+                                    </button>
+                                </form>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Additional Stores (Collapsible) -->
-                    <div class="store-list-collapsible" id="storeListCollapsible">
-                        <div class="store-item">
-                            <a href="{{ url_for('store') }}">
-                                <div class="store-info">
-                                    <h4>Trader Joe's</h4>
-                                    <p class="store-rating">★★★★★ (4.9)</p>
-                                    <p class="store-distance">1.2 km away</p>
-                                    <p class="store-price">$8.49 / lb</p>
-                                </div>
-                            </a>
-                            <div class="update-price-tab">
-                                <button class="update-price-btn" onclick="updatePrice('Trader Joe\'s')">
-                                    Update Price
-                                </button>
                             </div>
+                        {% endfor %}
                         </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('store') }}">
-                                <div class="store-info">
-                                    <h4>Safeway</h4>
-                                    <p class="store-rating">★★★★☆ (4.3)</p>
-                                    <p class="store-distance">1.5 km away</p>
-                                    <p class="store-price">$7.99 / lb</p>
-                                </div>
-                            </a>
-                            <div class="update-price-tab">
-                                <button class="update-price-btn" onclick="updatePrice('Safeway')">
-                                    Update Price
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('store') }}">
-                                <div class="store-info">
-                                    <h4>Kroger</h4>
-                                    <p class="store-rating">★★★★☆ (4.1)</p>
-                                    <p class="store-distance">2.1 km away</p>
-                                    <p class="store-price">$6.99 / lb</p>
-                                </div>
-                            </a>
-                            <div class="update-price-tab">
-                                <button class="update-price-btn" onclick="updatePrice('Kroger')">
-                                    Update Price
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="store-item">
-                            <a href="{{ url_for('store') }}">
-                                <div class="store-info">
-                                    <h4>Costco</h4>
-                                    <p class="store-rating">★★★★★ (4.8)</p>
-                                    <p class="store-distance">3.2 km away</p>
-                                    <p class="store-price">$5.99 / lb</p>
-                                </div>
-                            </a>
-                            <div class="update-price-tab">
-                                <button class="update-price-btn" onclick="updatePrice('Costco')">
-                                    Update Price
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Expand/Collapse Button -->
-                    <div class="expand-button-container">
-                        <button class="expand-button" onclick="toggleStoreList()">
+
+                        <!-- Expand/Collapse Button -->
+                        <div class="expand-button-container">
+                        <button class="expand-button" type="button" onclick="toggleStoreList()">
                             <span class="expand-text">Expand all stores available</span>
                             <span class="expand-icon">▼</span>
                         </button>
+                        </div>
+
+                    {% else %}
+                        <p class="text-muted">No stores currently list this product.</p>
+                    {% endif %}
                     </div>
-                </div>
             </div>
         </div>
     </div>  

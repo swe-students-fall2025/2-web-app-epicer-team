@@ -93,8 +93,7 @@
                             <strong>Contact:</strong> +1 (212) 555-2930
                         </div>
                         <div class="description">
-                            Whole Foods Market offers a wide range of organic and locally sourced groceries.
-                            Visit us for fresh produce, premium meat, and sustainable seafood.
+                            Description of the store.
                         </div>
                     </div>
                 </div>
@@ -105,7 +104,7 @@
                     {% if products %}
                     <div class="store-preview">
                     <div class="store-item">
-                        <a href="{{ url_for('product', product_id=products[0]._id) }}">
+                        <a href="{{ url_for('store_product', product_id=products[0]._id, sid = sid) }}">
                         <div class="store-info">
                             <h4>{{ products[0].name }}</h4>
                             <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
@@ -118,7 +117,7 @@
                     <div class="store-list-collapsible" id="productListCollapsible">
                     {% for p in products[1:] %}
                         <div class="store-item">
-                        <a href="{{ url_for('product', product_id=p._id) }}">
+                        <a href="{{ url_for('store_product', product_id=products[0]._id, sid=sid) }}">
                             <div class="store-info">
                             <h4>{{ p.name }}</h4>
                             <div class="store-price">

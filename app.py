@@ -117,11 +117,25 @@ def create_app():
     def profile():
         return render_template("pages/profile.html", user = current_user)
     
-    @app.route("/edit_profile", methods = ["GET", "POST"])# not sure about the name
+    @app.route("/edit_profile", methods = ["GET", "POST"])
     @login_required
     def edit_profile():
-        #do stuff (not sure what we plan to do here?)
-        return render_template("pages/edit_profile.html", user = current_user)
+        if request.method == "POST":
+            name = (request.form.get("name") or current_user.username)
+            email = (request.form.get("email") or current_user.email)
+            address = (request.form.get("address") or getattr(current_user, "address", ""))
+
+            db.users.update_one({
+                "_id": ObjectId(current_user.id)
+            },
+            {"$set":{
+                "username": name,
+                "email": email,
+                "address": address,
+            }})
+            return redirect(url_for("profile"))
+        
+        return render_template("pages/edit_profile.html", user=current_user)
     
     @app.route("/profile", methods = ["POST"])
     @login_required
@@ -161,10 +175,37 @@ def create_app():
     def product(product_id):
         product = db.products.find_one({"_id": ObjectId(product_id)})
         if not product:
-            #some error handler maybe?
             return redirect(url_for("search"))
-        return render_template("pages/product.html", product = product)
+        
+        s_list = list(db.stores.find({"product": product["name"]}))
+
+        return render_template("pages/product.html", product = product, stores = s_list)
     
+    @app.route("/product/<product_id>/<sid>")
+    def store_product(product_id, sid):
+        product = db.products.find_one({"_id": ObjectId(product_id)})
+        store = db.stores.find_one({"_id": ObjectId(sid)})
+        if not product or not store:
+            return redirect(request.referrer)
+        
+        # compute average rating
+        all_r = list(db.ratings.find({"type": "product", "target_id": ObjectId(product_id)}, {"_id": 0, "user_id":1, "rating": 1,}))
+        ratings = [r.get("rating") for r in all_r if "rating" in r]
+        avg_r = round(sum(ratings) / len(ratings), 2) if ratings else None
+        num_r = len(ratings)
+
+        # take comments out with ratings
+        all_c = list(db.ratings.find(
+            {"type": "product", "target_id": ObjectId(product_id)},
+            {"_id": 0, "user_id": 1, "rating": 1, "comment": 1, "updated_at": 1}
+        ))
+        # Attach username to each review
+        for r in all_c:
+            user = db.users.find_one({"_id": r["user_id"]}, {"username": 1})
+            r["username"] = user["username"] if user else "Anonymous"
+
+        return render_template("pages/store_product.html", product = product, store = store, avg_r = avg_r, num_r = num_r, r = ratings, reviews = all_c, product_id = product_id, sid = sid)
+
     @app.route("/rating/<target>/<target_id>", methods = ["POST"])
     @login_required
     def rating(target, target_id):
@@ -196,8 +237,12 @@ def create_app():
         flash("Thank you for your feedback!")
         if target == "store":
             return redirect(url_for("store", sid = target_id))
-        elif target == "product":
-            return redirect(url_for("product", product_id = target_id))
+        if target == "product":
+            sid = request.form.get("sid")
+            if sid:
+                return redirect(url_for("store_product", product_id=target_id, sid=sid))
+            return redirect(request.referrer)
+        return redirect(request.referrer)
     
     @app.route("/search")
     def search():
@@ -253,7 +298,7 @@ def create_app():
             product = request.form.get("product")
             store = request.form.get("store")
             price = request.form.get("price")
-            location = request.form.get("location")
+            address = request.form.get("address")
             proof = request.form.get("proof")
 
             # mock data for now
@@ -281,7 +326,7 @@ def create_app():
                     "name" : store,
                     "product" : product,
                     "price" : float(price),
-                    "location": location,
+                    "address": address,
                     "distance" : distance,
                     "img" : proof,
                 }
