@@ -1,83 +1,74 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Grocery Saver</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
-<body>
-  <div class="appSim">
-    <header class="header">
-      <div class="header-title">
-        <a  class = "text-decoration-none text-dark" href="{{ url_for('show_home') }}">Grocery Saver</a>
-      </div>
-      <div class = "header-buttons nav">
-        {% if current_user.is_authenticated %}
-        <a class="btn btn-sm btn-outline-primary " href="{{ url_for('profile') }}">Profile</a>
-        {% else %}
-	      <a class="btn btn-sm btn-outline-primary " href="{{ url_for('login') }}">Login</a>
-      	<a class="btn btn-sm btn-outline-primary " href="{{ url_for('register') }}">Register</a>
-        {% endif %}
-      </div>
-    </header>
+{% extends "base.html" %}
 
-    <main class="content">
-      <h1 class="h5 page-greeting">Welcome to Grocery Saver</h1>
-      <p class="muted-note">Select what you would like to do below</p>
+{% block app_class %} homepage{% endblock %}
+
+{% block search_bar %}{% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3">
-  <div class="row">
-    <div class="col-12">
-      <div class="product-main-header">
-        <h1 class="product-title">Welcome to Grocery Saver</h1>
-        <div class="product-average-rating">
-          <span class="rating-score">Find the best deals</span>
-          <span class="rating-count">near you</span>
+<main class="content">
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="hero-content">
+          <h1 class="hero-title">Welcome to Grocery Saver</h1>
+          <p class="hero-subtitle">Find the best deals on groceries near you. Compare prices, save money, and shop smarter.</p>
+          <div class="hero-actions">
+            <a href="{{ url_for('search') }}" class="btn btn-primary">Start Shopping</a>
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn btn-outline-primary">Join Now</a>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-  
-  <div class="row">
-    <div class="col-12">
-      <div class="product-details">
-        <div class="store-list-section">
-          <h3 class="store-list-title">Get Started</h3>
-          
-          <div class="store-preview">
-            <div class="store-item">
-              <a href="{{ url_for('search') }}">
-                <div class="store-info">
-                  <h4>Search Products</h4>
-                  <div class="store-price">Find items and compare prices</div>
-                </div>
-              </a>
+
+      <!-- Features Section -->
+      <div class="features-section">
+        <div class="container">
+          <h2 class="section-title">Why Choose Grocery Saver?</h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">🔍</div>
+              <h3>Smart Search</h3>
+              <p>Find products and compare prices across multiple stores in your area.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">💰</div>
+              <h3>Save Money</h3>
+              <p>Always find the best deals and never overpay for your groceries.</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📍</div>
+              <h3>Local Focus</h3>
+              <p>Discover nearby stores and get accurate distance information.</p>
             </div>
           </div>
-          
-          
-          
-          {% if current_user.is_authenticated %}
-          <div class="store-item">
-            <a href="{{ url_for('upload') }}">
-              <div class="store-info">
-                <h4>Upload Products</h4>
-                <div class="store-price">Share product information</div>
-              </div>
-            </a>
-          </div>
-          {% endif %}
         </div>
       </div>
-    </div>
-  </div>
-</div>
+
+      <!-- Quick Actions Section -->
+      <div class="quick-actions-section">
+        <div class="container">
+          <h2 class="section-title">Get Started</h2>
+          <div class="quick-actions-grid">
+            <a href="{{ url_for('search') }}" class="quick-action-card">
+              <div class="quick-action-icon">🛒</div>
+              <h4>Search Products</h4>
+              <p>Find items and compare prices</p>
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('upload') }}" class="quick-action-card">
+              <div class="quick-action-icon">📤</div>
+              <h4>Upload Products</h4>
+              <p>Share product information</p>
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="quick-action-card">
+              <div class="quick-action-icon">👤</div>
+              <h4>Create Account</h4>
+              <p>Join our community</p>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+</main>
 {% endblock %}
-
-{% block bottom_nav %}{% endblock %}
-
-{% block extra_scripts %}{% endblock %}

@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 
+{% block header %}
+<header class="header">
+  <div class="header-title">
+    <a class="text-decoration-none" href="{{ url_for('show_home') }}">Grocery Saver</a>
+  </div>
+  <div class="header-buttons nav">
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('profile') }}">Back to Profile</a>
+  </div>
+</header>
+{% endblock %}
+
+{% block search_bar %}{% endblock %}
+
 {% block content %}
 <div class="container-fluid px-3">
   <div class="row">
