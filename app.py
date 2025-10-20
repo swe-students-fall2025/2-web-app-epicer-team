@@ -11,38 +11,31 @@ import random
 load_dotenv()
 login_manager = LoginManager()
 
-mongo_user = os.getenv("MONGO_USER")
-mongo_pass = os.getenv("MONGO_PASS")
-mongo_host = os.getenv("MONGO_HOST")
-mongo_port = os.getenv("MONGO_PORT")
-mongo_db = os.getenv("MONGO_DB")
-SECRET_KEY = os.getenv("SECRET_KEY")
-
-def rating_handler(id):
-    return
-
 def create_app():
     app = Flask(__name__)
-    app.secret_key = SECRET_KEY
+    # load flask config from env variables
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
 
+    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+    db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
+
+    app.db = db
+
     @login_manager.user_loader
     def load_user(user_id):
-        db_user = db.users.find_one({"_id": ObjectId(user_id)})
-        return User(db_user)
-
-    mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
-    print("Mongo URI:", mongo_uri) # to test the problem
-    cxn = pymongo.MongoClient(mongo_uri)
-    db = cxn[mongo_db]
-    # check if connected to database
+        db_user = app.db.users.find_one({"_id": ObjectId(user_id)})
+        return User(db_user) if db_user else None
+    
     try:
         cxn.admin.command("ping")
-        print(" *", "Connected to MongoDB!")
+        print(" * Connected to MongoDB!")
+        print(" * Using DB:", app.db.name)
+        print(" * Users count:", app.db.users.count_documents({}))
     except Exception as e:
         print(" * MongoDB connection error:", e)
+
     
     @app.route("/")
     def show_home():
