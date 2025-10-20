@@ -302,45 +302,55 @@ def create_app():
     @app.route("/upload",  methods = ["GET", "POST"]) 
     @login_required
     def upload():
-        if request.method == 'POST':
-            product = request.form.get("product")
-            store = request.form.get("store")
-            price = request.form.get("price")
-            address = request.form.get("address")
-            proof = request.form.get("proof")
+        if request.method == 'GET':
+            prefill = {
+                "product": request.args.get("product", ""),
+                "store": request.args.get("store", ""),
+                "price": request.args.get("price", ""),
+                "address": request.args.get("address", ""),
+                "sid": request.args.get("sid", ""),
+                "product_id": request.args.get("product_id", ""),
+            }
+            return render_template("pages/upload.html", **prefill)
 
-            # mock data for now
-            distance = random.uniform(0, 20)
-            
-            db_p = db.products.find_one({"name": product})
-            db_s = db.stores.find_one({"name": store})
+        product = request.form.get("product")
+        store = request.form.get("store")
+        price = request.form.get("price")
+        address = request.form.get("address")
+        proof = request.form.get("proof")
 
-            # Check if product in store inventory
-            # If it is, then update with most recent p
-            #if db_p._id in db_s.inventory:
-                
+        # mock data for now
+        distance = random.uniform(0, 20)
+        
+        db_p = db.products.find_one({"name": product})
+        db_s = db.stores.find_one({"name": store})
+
+        # Check if product in store inventory
+        # If it is, then update with most recent p
+        #if db_p._id in db_s.inventory:
             
-            if not db_p:
-                # if no such product
-                p = {
-                    "name" : product,
-                    "store" : store,
-                    "price" : float(price),
-                    "img" : proof,
-                    }
-                db.products.insert_one(p)
-            if not db_s:
-                s = {
-                    "name" : store,
-                    "product" : product,
-                    "price" : float(price),
-                    "address": address,
-                    "distance" : distance,
-                    "img" : proof,
+        
+        if not db_p:
+            # if no such product
+            p = {
+                "name" : product,
+                "store" : store,
+                "price" : float(price),
+                "img" : proof,
                 }
-                db.stores.insert_one(s)
+            db.products.insert_one(p)
+        if not db_s:
+            s = {
+                "name" : store,
+                "product" : product,
+                "price" : float(price),
+                "address": address,
+                "distance" : distance,
+                "img" : proof,
+            }
+            db.stores.insert_one(s)
 
-            return redirect(url_for("search"))
+        return redirect(url_for("search"))
 
         return render_template("pages/upload.html")
     
