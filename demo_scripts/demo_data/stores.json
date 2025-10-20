@@ -1,29 +1,50 @@
 [
   {
     "name": "Whole Foods Market",
+    "product": "Organic Bananas",
+    "price": 2.19,
     "address": "95 E Houston St, New York, NY 10002",
-    "phone": "+1 (212) 555-2930",
-    "open_hours": "8:00 AM – 10:00 PM",
-    "distance": 2.3,
-    "products": ["Organic Bananas", "Free-Range Eggs"],
-    "store_lat": 40.7368492,
-    "store_long": -73.7105724,
-    "distances": { "68f66a404278dadd3b251a0c": 6.6160271294612345 }
+    "distances": {},
+    "img": ""
   },
   {
-    "name": "Trader Joe's",
-    "address": "142 E 14th St, New York, NY 10003",
-    "phone": "+1 (212) 555-2401",
-    "open_hours": "8:00 AM – 9:00 PM",
-    "distance": 1.2,
-    "products": ["Almond Milk"]
+    "name": "Whole Foods Market",
+    "product": "Free-Range Eggs",
+    "price": 5.49,
+    "address": "95 E Houston St, New York, NY 10002",
+    "distances": {},
+    "img": ""
   },
   {
     "name": "Safeway",
-    "address": "210 W 19th St, New York, NY 10011",
-    "phone": "+1 (212) 555-8820",
-    "open_hours": "7:00 AM – 11:00 PM",
-    "distance": 3.5,
-    "products": ["Organic Spinach"]
+    "product": "Organic Spinach",
+    "price": 2.99,
+    "address": "503 W 30th St, New York, NY 10001",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Trader Joe's",
+    "product": "Almond Milk",
+    "price": 3.29,
+    "address": "142 E 14th St, New York, NY 10003",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Trader Joe's",
+    "product": "Organic Bananas",
+    "price": 0.19,
+    "address": "142 E 14th St, New York, NY 10003",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Costco",
+    "product": "Almond Milk",
+    "price": 2.99,
+    "address": "517 E 117th St, New York, NY 10035",
+    "distances": {},
+    "img": ""
   }
 ]

@@ -1,10 +1,28 @@
 [
   {
+    "username": "ykh",
+    "email": "ykh@example.com",
+    "password": "secret123",
+    "address": "123 Main St, New York, NY 10003",
+    "user_lat": -12.345,
+    "user_long": 12.345
+
+  },
+  {
     "username": "john_doe",
     "email": "john@example.com",
-    "password": "secret1234",
-    "address": "75-56 181st Street",
-    "user_lat": 40.7280438,
-    "user_long": -73.7880321
-  }
+    "password": "secret456",
+    "address": "456 Broadway, New York, NY 10012",
+    "user_lat": 12.345,
+    "user_long": 12.345
+
+  },
+  {
+    "username": "sarah_lee",
+    "email": "sarah@example.com",
+    "password": "secret789",
+    "address": "789 Park Ave, New York, NY 10021",
+    "user_lat": -12.345,
+    "user_long": 12.345
+   }
 ]
