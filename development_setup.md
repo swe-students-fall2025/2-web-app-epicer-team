@@ -9,27 +9,23 @@
 
 3. **Run the setup script**
    ```bash
-   sudo chmod +x setup.sh
-   ./setup.sh
+   pipenv shell
+   pipenv install
    ```
    This will:
    - Set up the pipenv virtual environment
    - Install all dependencies
-   - Start MongoDB in Docker
-   - Import demo data
 
 4. **To start the app, run the following commands:**
 
     ```bash
-    source dev_env/bin/activate
-    flask run
+   python app.py
     ```
 Then go to http://127.0.0.1:5000 in your browser.
 
 5. **To stop the app, press Ctrl-C in the flask runtime, go to the root of the project, and run the following commands:**
 
     ```bash
-    ./demo_scripts/demo_stop.sh
     deactivate
     ```
 
