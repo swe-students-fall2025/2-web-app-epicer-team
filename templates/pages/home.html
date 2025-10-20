@@ -11,8 +11,10 @@
 <body>
   <div class="appSim">
     <header class="header">
-      <div class="header-title">Grocery Saver App Name</div>
-      <div>
+      <div class="header-title">
+        <a  class = "text-decoration-none text-dark" href="{{ url_for('show_home') }}">Grocery Saver App </a>
+      </div>
+      <div class = "header-buttons nav">
         {% if current_user.is_authenticated %}
         <a class="btn btn-sm btn-outline-primary " href="{{ url_for('profile') }}">Profile</a>
         {% else %}
@@ -23,8 +25,8 @@
     </header>
 
     <main class="content">
-      <h1 class="h5 page-greeting">Placeholder text of some kind</h1>
-      <p class="muted-note">This is a placeholder home screen.</p>
+      <h1 class="h5 page-greeting">Welcome to the Grocery Saver App</h1>
+      <p class="muted-note">Select what you would like to do below</p>
 
       <section class="card card-block">
         
@@ -38,8 +40,9 @@
         <a class="btn btn-outline-primary w-50" href="{{ url_for('product', product_id = product._id) }}">product</a>
         <a class="btn btn-outline-primary w-50" href="{{ url_for('store', sid = store._id) }}">store</a>
         #}
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">search</a>
-        <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">upload</a>
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('search') }}">Search</a>
+        <a class="btn btn-outline-primary w-50" href="{{ url_for('upload') }}">Upload</a>
+
       </div>
     </nav>
   </div>
