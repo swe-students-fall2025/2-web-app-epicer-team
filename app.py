@@ -134,9 +134,9 @@ def create_app():
     @app.route("/profile", methods = ["POST"])
     @login_required
     def delete_profile():
-        db.user.delete_one({"_id": ObjectId(current_user.id)})
+        db.users.delete_one({"_id": ObjectId(current_user.id)})
         logout_user()
-        return redirect(url_for("home"))
+        return redirect(url_for("show_home"))
 
     @app.route("/store/<sid>")
     def store(sid):
