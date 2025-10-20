@@ -13,12 +13,19 @@ from geopy.distance import geodesic
 load_dotenv()
 login_manager = LoginManager()
 login_manager.login_view = 'login'
+
 def create_app():
     app = Flask(__name__)
     # load flask config from env variables
     config = dotenv_values()
     app.config.from_mapping(config)
     login_manager.init_app(app) # config login manager for login
+    login_manager.login_view = "login" 
+
+    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+    db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
+
+    app.db = db
 
     cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
     db = cxn[os.getenv("MONGO_DBNAME", "grocery_demo")]
@@ -56,16 +63,15 @@ def create_app():
             db_email = db.users.find_one({"email": email})
             # no such user
             if not db_email:
-                print("Email not registered.")
+                flash("Email not registered.")
                 return render_template("pages/login.html")
             
             if db_email["password"] == password:
                 user = User(db_email)
                 login_user(user)
-                flash('Logged in successfully.')
                 return redirect(url_for("search"))
             else:
-                print("Wrong password!")
+                flash("Wrong password!")
                 return render_template("pages/login.html")
         return render_template("pages/login.html")
     
@@ -85,12 +91,12 @@ def create_app():
             password = request.form.get("password")
 
             if not username or not email or not password:
-                print("Please fill in all fields!")
+                flash("Please fill in all fields!")
                 return render_template("pages/register.html")
             
             db_email = db.users.find_one({"email": email})
             if db_email:
-                print("Email already registered!")
+                flash("Email already registered!")
                 return render_template("pages/register.html")
             
             new_user = ({
@@ -110,7 +116,8 @@ def create_app():
     @app.route("/profile")
     @login_required
     def profile():
-        return render_template("pages/profile.html", user = current_user)
+        userdata = db.users.find_one({"_id": ObjectId(current_user.id)})
+        return render_template("pages/profile.html", user = userdata)
     
     @app.route("/edit_profile", methods = ["GET", "POST"])
     @login_required
@@ -151,16 +158,17 @@ def create_app():
                         {"_id": store["_id"]},
                         {"$set": {"distance": distance}}
                     )
+            }})
             return redirect(url_for("profile"))
         
         return render_template("pages/edit_profile.html", user=current_user)
     
-    @app.route("/profile", methods = ["POST"])
+    @app.route("/delete_profile", methods = ["POST"])
     @login_required
     def delete_profile():
-        db.user.delete_one({"_id": ObjectId(current_user.id)})
+        db.users.delete_one({"_id": ObjectId(current_user.id)})
         logout_user()
-        return redirect(url_for("home"))
+        return redirect(url_for("show_home"))
 
     @app.route("/store/<sid>")
     def store(sid):
@@ -198,7 +206,7 @@ def create_app():
         
         s_list = list(db.stores.find({"product": product["name"]}))
 
-        return render_template("pages/product.html", product = product, stores = s_list)
+        return render_template("pages/product.html", product_id = product_id, product = product, stores = s_list)
     
     @app.route("/product/<product_id>/<sid>")
     def store_product(product_id, sid):
@@ -305,6 +313,20 @@ def create_app():
                         or store_distance.get(r.get("store"), float("inf")) < distance
                     )
                 ]
+            seen = set()
+            unique = []
+            for r in result:
+                if r["type"] == "store":
+                    key = ("store", r.get("name"))
+                else:  # product
+                    key = ("product", r.get("id"))  # product _id is unique
+                if key in seen:
+                    continue
+                seen.add(key)
+                unique.append(r)
+
+            result = unique
+
             return render_template("pages/search.html", query = query, result = result)
         # On first render, did not query yet
         return render_template("pages/search.html", query = None, result = None)
@@ -327,9 +349,10 @@ def create_app():
                 error = "Could not find that address. Please enter address again."
                 return render_template("pages/upload.html", name=name, email=email, price=price, proof=proof)
             #distance = random.uniform(0, 20)
+        if request.method == 'GET':
             
-            db_p = db.products.find_one({"name": product})
-            db_s = db.stores.find_one({"name": store})
+            product_id = request.args.get("product_id", "")
+            sid = request.args.get("sid", "")
 
             if not db_p:
                 # if no such product

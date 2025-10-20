@@ -1,57 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
+{% block title %}Store Page{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Store Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-</head>
+{% block content %}
 
-<body>
-    <div class="appSim">
-    <header class="site-header">
-        <div class="container-fluid px-3">
-            <div class="row align-items-center py-2">
-                <!-- Logo -->
-                <div class="col-6">
-                    <div class="logo">
-                        <h4 class="mb-0">
-                            <a href="{{ url_for('show_home') }}" class="text-decoration-none text-dark">App Name</a>
-                        </h4>
-                    </div>
-                </div>
-                <!-- Navigation Menu -->
-                <div class="col-6 text-end">
-                    <nav class="nav">
-                        {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">Account</a>
-                        {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">Login/Register</a>
-                        {% endif %}
-                    </nav>
-                </div>
-            </div>
-            <!-- Search Bar -->
-            <div class="row">
-                <div class="col-12">
-                    <form class="search-form" action="{{ url_for('search') }}" method="get">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search items..." name="q">
-                            <button type="submit" class="btn btn-primary">
-                                Search
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="container-fluid px-3">
+<div class="container-fluid px-3">
         <!-- Store Header -->
         <div class="row">
             <div class="col-12">
@@ -88,7 +41,16 @@
                     <!-- Store info -->
                     <div class="store-info mb-3">
                         <div class="info-item mb-2">
-                            <strong>Distance:</strong> {{ store.get('distance', 'Please enter your location in your profile') }} km away
+                            <strong>Distance:</strong> {{ store.get('distance', '—') }} km away
+                        </div>
+                        <div class="info-item mb-2">
+                            <strong>Open Hours:</strong> 8:00 AM – 10:00 PM
+                        </div>
+                        <div class="info-item mb-2">
+                            <strong>Contact:</strong> +1 (212) 555-2930
+                        </div>
+                        <div class="description">
+                            Description of the store.
                         </div>
                     </div>
                 </div>
@@ -99,7 +61,7 @@
                     {% if products %}
                     <div class="store-preview">
                     <div class="store-item">
-                        <a href="{{ url_for('store_product', product_id=products[0]['_id'], sid = sid) }}">
+                        <a href="{{ url_for('store_product', product_id=products[0]._id, sid = sid) }}">
                         <div class="store-info">
                             <h4>{{ products[0].name }}</h4>
                             <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
@@ -112,7 +74,7 @@
                     <div class="store-list-collapsible" id="productListCollapsible">
                     {% for p in products[1:] %}
                         <div class="store-item">
-                        <a href="{{ url_for('product', product_id=products[0]['_id'], sid=sid) }}">
+                        <a href="{{ url_for('store_product', product_id=products[0]._id, sid=sid) }}">
                             <div class="store-info">
                             <h4>{{ p.name }}</h4>
                             <div class="store-price">
@@ -138,7 +100,7 @@
                 <div class="upload-prompt-section">
                     <div class="upload-prompt-content">
                         <p class="upload-prompt-text">Can't find what you're looking for?</p>
-                        <a href="{{ url_for('upload') }}" class="upload-prompt-btn">Upload New Product</a>
+                        <a href="{{ url_for('upload', sid=sid) }}" class="upload-prompt-btn">Upload New Product</a>
                     </div>
                 </div>
                 
@@ -254,8 +216,9 @@
             </div>
         </div>
     </div>
-    </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script>
 function toggleProductList() {
     const collapsible = document.getElementById('productListCollapsible');
@@ -298,5 +261,4 @@ document.addEventListener('DOMContentLoaded', function() {
     commentCollapsible.style.display = 'none';
 });
 </script>
-</body>
-</html>
+{% endblock %}
