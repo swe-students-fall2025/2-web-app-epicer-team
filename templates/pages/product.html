@@ -46,8 +46,8 @@
                             </a>
                             <div class="update-price-tab">
                             <form action="{{ url_for('upload') }}" method="get" class="d-inline">
-                                <input type="hidden" name="product_id" value="{{ first._id }}">
-                                <input type="hidden" name="sid" value="{{ sid }}">
+                                <input type="hidden" name="product_id" value="{{ product_id }}">
+                                <input type="hidden" name="sid" value="{{ first._id }}">
                                 <button type="submit" class="update-price-btn btn btn-outline-primary">
                                     Update Price
                                 </button>
@@ -77,8 +77,8 @@
                             </a>
                             <div class="update-price-tab">
                                 <form action="{{ url_for('upload') if current_user.is_authenticated else url_for('login') }}" method="get" class="d-inline">
-                                    <input type="hidden" name="product_id" value="{{ p._id }}">
-                                    <input type="hidden" name="sid" value="{{ sid }}">
+                                    <input type="hidden" name="product_id" value="{{ product_id }}">
+                                    <input type="hidden" name="sid" value="{{ s._id }}">
                                     <button type="submit" class="update-price-btn btn btn-outline-primary">
                                         Update Price
                                     </button>

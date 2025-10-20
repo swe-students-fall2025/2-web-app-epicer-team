@@ -100,7 +100,7 @@
                 <div class="upload-prompt-section">
                     <div class="upload-prompt-content">
                         <p class="upload-prompt-text">Can't find what you're looking for?</p>
-                        <a href="{{ url_for('upload') }}" class="upload-prompt-btn">Upload New Product</a>
+                        <a href="{{ url_for('upload', sid=sid) }}" class="upload-prompt-btn">Upload New Product</a>
                     </div>
                 </div>
                 
@@ -215,7 +215,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 {% endblock %}
 
