@@ -61,7 +61,6 @@ def create_app():
             if db_email["password"] == password:
                 user = User(db_email)
                 login_user(user)
-                flash('Logged in successfully.')
                 return redirect(url_for("search"))
             else:
                 flash("Wrong password!")
@@ -109,7 +108,8 @@ def create_app():
     @app.route("/profile")
     @login_required
     def profile():
-        return render_template("pages/profile.html", user = current_user)
+        userdata = db.users.find_one({"_id": ObjectId(current_user.id)})
+        return render_template("pages/profile.html", user = userdata)
     
     @app.route("/edit_profile", methods = ["GET", "POST"])
     @login_required
