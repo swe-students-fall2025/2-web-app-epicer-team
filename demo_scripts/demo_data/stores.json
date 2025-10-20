@@ -1,38 +1,29 @@
 [
   {
-    "name": "Store 1",
-    "location": {
-      "city": "New York",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": 12.3456, "lng": -12.3456 }
-    },
-    "average_rating": 1.2,
-    "num_ratings": 34,
-    "inventory": []
+    "name": "Whole Foods Market",
+    "address": "95 E Houston St, New York, NY 10002",
+    "phone": "+1 (212) 555-2930",
+    "open_hours": "8:00 AM – 10:00 PM",
+    "distance": 2.3,
+    "products": ["Organic Bananas", "Free-Range Eggs"],
+    "store_lat": 40.7368492,
+    "store_long": -73.7105724,
+    "distances": { "68f66a404278dadd3b251a0c": 6.6160271294612345 }
   },
   {
-    "name": "Store 2",
-    "location": {
-      "city": "Brooklyn",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": -12.3456, "lng": -12.3456 }
-    },
-    "average_rating": 2.3,
-    "num_ratings": 45,
-    "inventory": []
+    "name": "Trader Joe's",
+    "address": "142 E 14th St, New York, NY 10003",
+    "phone": "+1 (212) 555-2401",
+    "open_hours": "8:00 AM – 9:00 PM",
+    "distance": 1.2,
+    "products": ["Almond Milk"]
   },
   {
-    "name": "Store 3",
-    "location": {
-      "city": "Bronx",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": -12.3456, "lng": 12.3456 }
-    },
-    "average_rating": 3.4,
-    "num_ratings": 56,
-    "inventory": []
+    "name": "Safeway",
+    "address": "210 W 19th St, New York, NY 10011",
+    "phone": "+1 (212) 555-8820",
+    "open_hours": "7:00 AM – 11:00 PM",
+    "distance": 3.5,
+    "products": ["Organic Spinach"]
   }
 ]

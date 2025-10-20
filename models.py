@@ -7,3 +7,5 @@ class User(UserMixin):
         self.email = doc.get("email", "")
         self.password = doc.get("password", "")
         self.address = doc.get("address", "")
+        self.user_lat = doc.get("user_lat", "")
+        self.user_long = doc.get("user_long", "")

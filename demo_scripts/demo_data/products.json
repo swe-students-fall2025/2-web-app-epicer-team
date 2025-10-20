@@ -18,15 +18,5 @@
     "unit_quantity": 12,
     "unit_type": "pcs",
     "updated_at": "2025-10-12T10:00:00Z"
-  },
-  {
-    "name": "Bananas",
-    "brand": "My Brand",
-    "category": "Produce",
-    "dietary_tags": ["vegan", "gluten-free"],
-    "unit_size": "1kg",
-    "unit_quantity": 1000,
-    "unit_type": "g",
-    "updated_at": "2025-10-12T10:00:00Z"
   }
 ]

@@ -9,10 +9,17 @@ from models import User
 import random
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
+from urllib.parse import quote_plus
 
 load_dotenv()
 login_manager = LoginManager()
 login_manager.login_view = 'login'
+MONGO_USER = os.getenv("MONGO_USER")
+MONGO_PASS = quote_plus(os.getenv("MONGO_PASS", ""))
+MONGO_HOST = os.getenv("MONGO_HOST", "localhost")
+MONGO_PORT = os.getenv("MONGO_PORT", "27017")
+DB_NAME = os.getenv("MONGO_DBNAME", "grocery_demo")
+MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}:{MONGO_PORT}/{DB_NAME}?authSource=admin"
 
 def create_app():
     app = Flask(__name__)
@@ -22,13 +29,9 @@ def create_app():
     login_manager.init_app(app) # config login manager for login
     login_manager.login_view = "login" 
 
-    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
-    db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
-
-    app.db = db
-
-    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
-    db = cxn[os.getenv("MONGO_DBNAME", "grocery_demo")]
+    # Build URI
+    cxn = pymongo.MongoClient(MONGO_URI)
+    db = cxn[DB_NAME]
 
     app.db = db
 
@@ -89,6 +92,7 @@ def create_app():
             username = request.form.get("username")
             email = request.form.get("email")
             password = request.form.get("password")
+            address = request.form.get("address", "")
 
             if not username or not email or not password:
                 flash("Please fill in all fields!")
@@ -98,17 +102,64 @@ def create_app():
             if db_email:
                 flash("Email already registered!")
                 return render_template("pages/register.html")
-            
+        
+            if address is not None:
+                try:
+                    geolocator = Nominatim(user_agent='user_locator')
+                    location = geolocator.geocode(address)
+                    user_lat = location.latitude
+                    user_long = location.longitude
+                except:
+                    user_lat = user_long =  location = None
+                    flash("Could not get location, try again later!")
+            else:
+                flash("Warning: distance features cannot work without location!")
+                user_lat = user_long =  location = None
+        
             new_user = ({
                 "username": username,
                 "email": email,
                 "password": password,
+                "address": address,
+                "user_lat":user_lat,
+                "user_long":user_long
             })
             doc = db.users.insert_one(new_user)
 
             user_doc = db.users.find_one({"_id": doc.inserted_id})
             user = User(user_doc)
             login_user(user)
+            user_id = current_user.id
+
+            stores = db.stores.find()
+            for store in stores:
+                store_lat = store.get("store_lat")
+                store_long = store.get("store_long")
+                if store_lat is not None and store_long is not None:
+                    distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+                else:
+                    try:
+                        geolocator = Nominatim(user_agent='store_locator')
+                        location = geolocator.geocode(store['address'])
+                        if location is not None:
+                            store_lat = location.latitude 
+                            store_long  = location.longitude
+                            distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+                        else:
+                            store_lat = store_long = distance = None
+                    except:
+                        store_lat = store_long = distance = None
+
+                    db.stores.update_one(
+                        {"_id": store["_id"]},
+                        {"$set": {"store_lat": store_lat, "store_long":store_long}}
+                    )
+
+                db.stores.update_one(
+                    {"_id": store["_id"]},
+                    {"$set": {f"distances.{user_id}": distance}}
+                )
+
 
             return redirect(url_for("search"))
         return render_template("pages/register.html")
@@ -126,17 +177,16 @@ def create_app():
             name = (request.form.get("name") or current_user.username)
             email = (request.form.get("email") or current_user.email)
             address = (request.form.get("address") or getattr(current_user, "address", ""))
-
-            geolocator = Nominatim(user_agent='user_locator')
-            location = geolocator.geocode(address)
-
-            if location is None:
+            try:
+                geolocator = Nominatim(user_agent='user_locator')
+                location = geolocator.geocode(address)
+            except:
                 error = "Could not find that address. Please enter address again."
                 return render_template("pages/edit_profile.html", error=error, name=name, email=email, address=address)
 
             user_lat = location.latitude
             user_long = location.longitude
-
+            user_id = current_user.id
             db.users.update_one({
                 "_id": ObjectId(current_user.id)
             },
@@ -154,11 +204,30 @@ def create_app():
                 store_long = store.get("store_long")
                 if store_lat is not None and store_long is not None:
                     distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+                else:
+                    try:
+                        geolocator = Nominatim(user_agent='store_locator')
+                        location = geolocator.geocode(store['address'])
+                        if location is not None:
+                            store_lat = location.latitude 
+                            store_long  = location.longitude
+                            distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+                        else:
+                            store_lat = store_long = distance = None
+                    except:
+                        store_lat = store_long = distance = None
+
+
                     db.stores.update_one(
                         {"_id": store["_id"]},
-                        {"$set": {"distance": distance}}
+                        {"$set": {"store_lat": store_lat, "store_long":store_long}}
                     )
-            }})
+                
+                db.stores.update_one(
+                    {"_id": store["_id"]},
+                    {"$set": {f"distances.{user_id}": distance}}
+                )
+
             return redirect(url_for("profile"))
         
         return render_template("pages/edit_profile.html", user=current_user)
@@ -166,17 +235,23 @@ def create_app():
     @app.route("/delete_profile", methods = ["POST"])
     @login_required
     def delete_profile():
+        user_id = current_user.id
+        stores = db.stores.find()
+        for store in stores:
+            del store['distances'][user_id]
         db.users.delete_one({"_id": ObjectId(current_user.id)})
         logout_user()
         return redirect(url_for("show_home"))
 
     @app.route("/store/<sid>")
     def store(sid):
+        if current_user.is_authenticated:
+            user_id = current_user.id
+        else:
+            user_id = None
         store = db.stores.find_one({"_id": ObjectId(sid)})
-        print(store)
         if not store:
             return redirect(url_for("search"))
-        
         # compute average rating
         all_r = list(db.ratings.find({"type": "store", "target_id": ObjectId(sid)}, {"_id": 0, "user_id":1, "rating": 1,}))
         ratings = [r.get("rating") for r in all_r if "rating" in r]
@@ -196,7 +271,7 @@ def create_app():
         #all products of the store
         p_list = list(db.products.find({"store": store["name"]}))
 
-        return render_template("pages/store.html", store = store, sid = sid, avg_r = avg_r, num_r = num_r, r = ratings, products = p_list, reviews = all_c)
+        return render_template("pages/store.html", store = store, sid = sid, avg_r = avg_r, num_r = num_r, r = ratings, products = p_list, reviews = all_c, user_id=user_id)
     
     @app.route("/product/<product_id>")
     def product(product_id):
@@ -205,16 +280,23 @@ def create_app():
             return redirect(url_for("search"))
         
         s_list = list(db.stores.find({"product": product["name"]}))
+        if current_user.is_authenticated:
+            user_id=current_user.id
+        else:
+            user_id=None
 
-        return render_template("pages/product.html", product_id = product_id, product = product, stores = s_list)
+        return render_template("pages/product.html", product_id = product_id, product = product, stores = s_list, user_id=user_id)
     
     @app.route("/product/<product_id>/<sid>")
     def store_product(product_id, sid):
+        if current_user.is_authenticated:
+            user_id = current_user.id
+        else:
+            user_id = None
         product = db.products.find_one({"_id": ObjectId(product_id)})
         store = db.stores.find_one({"_id": ObjectId(sid)})
         if not product or not store:
             return redirect(request.referrer)
-        
         # compute average rating
         all_r = list(db.ratings.find({"type": "product", "target_id": ObjectId(product_id)}, {"_id": 0, "user_id":1, "rating": 1,}))
         ratings = [r.get("rating") for r in all_r if "rating" in r]
@@ -231,7 +313,7 @@ def create_app():
             user = db.users.find_one({"_id": r["user_id"]}, {"username": 1})
             r["username"] = user["username"] if user else "Anonymous"
 
-        return render_template("pages/store_product.html", product = product, store = store, avg_r = avg_r, num_r = num_r, r = ratings, reviews = all_c, product_id = product_id, sid = sid)
+        return render_template("pages/store_product.html", product = product, store = store, avg_r = avg_r, num_r = num_r, r = ratings, reviews = all_c, product_id = product_id, sid = sid, user_id=user_id)
 
     @app.route("/rating/<target>/<target_id>", methods = ["POST"])
     @login_required
@@ -335,49 +417,62 @@ def create_app():
     @app.route("/upload",  methods = ["GET", "POST"]) 
     @login_required
     def upload():
-        if request.method == 'POST':
-            product = request.form.get("product")
-            store = request.form.get("store")
-            price = request.form.get("price")
-            address = request.form.get("address")
-            proof = request.form.get("proof")
-
-            geolocator = Nominatim(user_agent='store_locator')
-            location = geolocator.geocode(address)
-
-            if location is None:
-                error = "Could not find that address. Please enter address again."
-                return render_template("pages/upload.html", name=name, email=email, price=price, proof=proof)
-            #distance = random.uniform(0, 20)
         if request.method == 'GET':
             
             product_id = request.args.get("product_id", "")
             sid = request.args.get("sid", "")
 
-            if not db_p:
-                # if no such product
-                p = {
-                    "name" : product,
-                    "store" : store,
-                    "price" : float(price),
-                    "img" : proof,
-                    }
-                db.products.insert_one(p)
-            if not db_s:
-                s = {
-                    "name" : store,
-                    "product" : product,
-                    "price" : float(price),
-                    "address": address,
-                    "store_long" : location.longitude,
-                    "store_lat":location.latitude,
-                    "img" : proof,
-                }
-                db.stores.insert_one(s)
+            doc_p = None
+            doc_s = None 
+            
+            if sid:
+                doc_s = db.stores.find_one({"_id": ObjectId(sid)})
+                
+            if product_id:
+                doc_p = db.products.find_one({"_id": ObjectId(product_id)})
 
-            return redirect(url_for("search"))
-        store = ''
-        return render_template("pages/upload.html",store=store)
+            product = doc_p["name"] if doc_p else ""
+            store = doc_s["name"] if doc_s else ""
+            address = doc_s["address"] if doc_s else ""
+            lock_p = bool(product)
+            lock_s = bool(store)
+            return render_template("pages/upload.html", product = product, store = store, address = address, lock_p = lock_p, lock_s = lock_s)
+
+        product = request.form.get("product", "").strip()
+        store = request.form.get("store", "").strip()
+        price = float(request.form.get("price", 0))
+        address = request.form.get("address", "").strip()
+        proof = request.form.get("proof")
+
+        geolocator = Nominatim(user_agent='store_locator')
+        location = geolocator.geocode(address)
+
+        if location is None:
+            error = "Could not find that address. Please enter address again."
+            return render_template("pages/upload.html", product = product, store = store, address = address)
+
+        store_lat = location.latitude
+        store_long = location.longitude
+        if getattr(current_user, "user_lat", None) is not None and getattr(current_user, "user_long", None) is not None:
+            user_lat = current_user.user_lat 
+            user_long = current_user.user_long
+            distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
+        else:
+            distance = "Set location in profile please!"
+
+        user_id = current_user.id
+        db.products.update_one(
+            {"name": product, "store": store},
+            {"$set": {"price": price, "img": proof}},
+            upsert=True,
+        )
+        db.stores.update_one(
+            {"name": store, "product": product},
+            {"$set": {"price": price, "address": address, f"distances.{user_id}": distance, 'store_lat':store_lat, 'store_long':store_long}},
+            upsert=True,
+        )
+
+        return redirect(url_for('search'))
 
     @app.errorhandler(Exception)
     def handle_error(e):

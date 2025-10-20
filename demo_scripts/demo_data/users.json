@@ -1,20 +1,10 @@
 [
   {
-    "username": "user1",
-    "email": "user1@example2.com",
-    "password":"secret1234",
-    "created_at": "2025-09-01T15:00:00Z"
-  },
-  {
-    "username": "user2",
-    "email": "user2@example3.com",
-    "password":"secret4567",
-    "created_at": "2025-09-05T10:30:00Z"
-  },
-  {
-    "username": "user4",
-    "email": "user4@example2.com",
-    "password":"secret7890",
-    "created_at": "2025-09-10T11:45:00Z"
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "secret1234",
+    "address": "75-56 181st Street",
+    "user_lat": 40.7280438,
+    "user_long": -73.7880321
   }
 ]
