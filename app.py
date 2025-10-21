@@ -343,18 +343,24 @@ def create_app():
             elif product:
                 result = result_p
 
+            lock_s = bool(store)
+            lock_p = bool(product)
+
             # check budget and distance
             if budget is not None:
-                result = [r for r in result if (r["type"] == "store") or (r.get("price", float("inf")) <= budget)] 
+                result = [r for r in result if (r["type"] == "product") and (r.get("price", float("inf")) <= budget)] 
             if user_id is not None and distance is not None:
                 store_distance = {
-                    s["name"]: s.distances.get(user_id, float("inf")) for s in db.stores.find({}, {"_id": 0, "name": 1, "distances": 1})
+                    s["name"]: (
+                        s.get("distances", {}).get(user_id, float("inf"))
+                        if s.get("distances", {}).get(user_id) is not None
+                        else float("inf")
+                        ) for s in db.stores.find({}, {"_id": 0, "name": 1, "distances": 1})
                 }
                 result = [
-                    r for r in result if (
-                        r.distance.get(user_id, float("inf")) < distance
-                        or store_distance.get(r.get("store"), float("inf")) < distance
-                    )
+                    r for r in result
+                    if r.get("type") == "store"
+                    and store_distance.get(r["name"], float("inf")) <= distance
                 ]
             seen = set()
             unique = []
@@ -370,7 +376,7 @@ def create_app():
 
             result = unique
 
-            return render_template("pages/search.html", query = query, result = result, user_id=user_id)
+            return render_template("pages/search.html", query = query, result = result, user_id=user_id, lock_s = lock_s, lock_p = lock_p)
         # On first render, did not query yet
         return render_template("pages/search.html", query = None, result = None)
     
