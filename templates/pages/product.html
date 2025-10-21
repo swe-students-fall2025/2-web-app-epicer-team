@@ -31,7 +31,7 @@
                             <div class="store-info">
                                 <h4>{{ first.name }}</h4>
                                 <p class="store-distance">
-                                {{ first.get('distance', '—') }}{% if first.get('distance') is not none %} km away{% endif %}
+                                {{ first.distances.get(user_id, '—') }}{% if first.distances.get(user_id) is not none %} km away{% endif %}
                                 </p>
                                 <p class="store-price">
                                 {% set price_val = first.get('price', product.get('price')) %}
@@ -65,7 +65,7 @@
                                 <div class="store-info">
                                 <h4>{{ s.name }}</h4>
                                 <p class="store-distance">
-                                    {{ s.get('distance', '—') }}{% if s.get('distance') is not none %} km away{% endif %}
+                                    {{ s.distances.get(user_id, '—') }}{% if s.distances.get(user_id) is not none %} km away{% endif %}
                                 </p>
                                 <p class="store-price">
                                     {% set p = s.get('price', product.get('price')) %}

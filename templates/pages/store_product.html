@@ -67,7 +67,7 @@
                         <div class="store-info mb-3">
                             <strong>Sold by:</strong> 
                             <a href="{{ url_for('store', sid = sid) }}" class="store-link">{{store.name}}</a>
-                            <span class="distance">• {{store.distance}} km away</span>
+                            <span class="distance">• {{store.distances.get(user_id,'-')}} km away</span>
                         </div>
                     </div>
                 </div>

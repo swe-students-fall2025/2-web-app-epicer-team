@@ -33,8 +33,6 @@ echo "NOTE: To enter the environment manually later, run:"
 echo "    pipenv shell"
 echo "----------------------------------------"
 
-exec pipenv shell
-
 # Automatically drop user into pipenv shell if not already in one
 if [ -z "${PIPENV_ACTIVE:-}" ]; then
   exec $PIPENV shell

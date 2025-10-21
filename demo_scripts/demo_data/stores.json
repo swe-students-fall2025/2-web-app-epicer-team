@@ -1,38 +1,50 @@
 [
   {
-    "name": "Store 1",
-    "location": {
-      "city": "New York",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": 12.3456, "lng": -12.3456 }
-    },
-    "average_rating": 1.2,
-    "num_ratings": 34,
-    "inventory": []
+    "name": "Whole Foods Market",
+    "product": "Organic Bananas",
+    "price": 2.19,
+    "address": "95 E Houston St, New York, NY 10002",
+    "distances": {},
+    "img": ""
   },
   {
-    "name": "Store 2",
-    "location": {
-      "city": "Brooklyn",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": -12.3456, "lng": -12.3456 }
-    },
-    "average_rating": 2.3,
-    "num_ratings": 45,
-    "inventory": []
+    "name": "Whole Foods Market",
+    "product": "Free-Range Eggs",
+    "price": 5.49,
+    "address": "95 E Houston St, New York, NY 10002",
+    "distances": {},
+    "img": ""
   },
   {
-    "name": "Store 3",
-    "location": {
-      "city": "Bronx",
-      "state": "NY",
-      "country": "USA",
-      "coordinates": { "lat": -12.3456, "lng": 12.3456 }
-    },
-    "average_rating": 3.4,
-    "num_ratings": 56,
-    "inventory": []
+    "name": "Safeway",
+    "product": "Organic Spinach",
+    "price": 2.99,
+    "address": "503 W 30th St, New York, NY 10001",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Trader Joe's",
+    "product": "Almond Milk",
+    "price": 3.29,
+    "address": "142 E 14th St, New York, NY 10003",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Trader Joe's",
+    "product": "Organic Bananas",
+    "price": 0.19,
+    "address": "142 E 14th St, New York, NY 10003",
+    "distances": {},
+    "img": ""
+  },
+  {
+    "name": "Costco",
+    "product": "Almond Milk",
+    "price": 2.99,
+    "address": "517 E 117th St, New York, NY 10035",
+    "distances": {},
+    "img": ""
   }
 ]

@@ -1,20 +1,28 @@
 [
   {
-    "username": "user1",
-    "email": "user1@example2.com",
-    "password":"secret1234",
-    "created_at": "2025-09-01T15:00:00Z"
+    "username": "ykh",
+    "email": "ykh@example.com",
+    "password": "secret123",
+    "address": "123 Main St, New York, NY 10003",
+    "user_lat": -12.345,
+    "user_long": 12.345
+
   },
   {
-    "username": "user2",
-    "email": "user2@example3.com",
-    "password":"secret4567",
-    "created_at": "2025-09-05T10:30:00Z"
+    "username": "john_doe",
+    "email": "john@example.com",
+    "password": "secret456",
+    "address": "456 Broadway, New York, NY 10012",
+    "user_lat": 12.345,
+    "user_long": 12.345
+
   },
   {
-    "username": "user4",
-    "email": "user4@example2.com",
-    "password":"secret7890",
-    "created_at": "2025-09-10T11:45:00Z"
-  }
+    "username": "sarah_lee",
+    "email": "sarah@example.com",
+    "password": "secret789",
+    "address": "789 Park Ave, New York, NY 10021",
+    "user_lat": -12.345,
+    "user_long": 12.345
+   }
 ]
