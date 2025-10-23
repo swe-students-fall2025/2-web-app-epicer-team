@@ -6,16 +6,12 @@ import pymongo
 from bson.objectid import ObjectId
 from dotenv import load_dotenv, dotenv_values
 from models import User
-import random
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 from urllib.parse import quote_plus
 
 load_dotenv()
 login_manager = LoginManager()
-login_manager.login_view = 'login'
-MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME")
 
 def recalculate_distance(stores, db, user_id, user_lat, user_long):
     print("Running recalculate_distance!")
@@ -47,7 +43,7 @@ def recalculate_distance(stores, db, user_id, user_lat, user_long):
 
         db.stores.update_one(
             {"_id": store["_id"]},
-            {"$set": {f"distances.{user_id}": distance}}
+            {"$set": {f"distances.{user_id}": round(distance, 2)}}
         )
 
 def create_app():
@@ -58,10 +54,9 @@ def create_app():
     login_manager.init_app(app) # config login manager for login
     login_manager.login_view = "login" 
 
-
     # Build URI
-    cxn = pymongo.MongoClient(MONGO_URI)
-    db = cxn[DB_NAME]
+    cxn = pymongo.MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+    db = cxn[os.getenv("MONGO_DBNAME", "fz2176")]
 
     app.db = db
 
@@ -356,9 +351,12 @@ def create_app():
             elif product:
                 result = result_p
 
+            lock_s = bool(store)
+            lock_p = bool(product)
+
             # check budget and distance
             if budget is not None:
-                result = [r for r in result if (r["type"] == "store") or (r.get("price", float("inf")) <= budget)] 
+                result = [r for r in result if (r["type"] == "product") and (r.get("price", float("inf")) <= budget)] 
             if user_id is not None and distance is not None:
                 store_distance = {
                     s["name"]: s['distances'].get(user_id, float("inf")) for s in db.stores.find({}, {"_id": 0, "name": 1, "distances": 1})
@@ -383,7 +381,7 @@ def create_app():
 
             result = unique
 
-            return render_template("pages/search.html", query = query, result = result, user_id=user_id)
+            return render_template("pages/search.html", query = query, result = result, user_id=user_id, lock_s = lock_s, lock_p = lock_p)
         # On first render, did not query yet
         if user_id is None:
             flash("Login to get distance information.")
@@ -417,7 +415,13 @@ def create_app():
 
         product = request.form.get("product", "").strip()
         store = request.form.get("store", "").strip()
-        price = float(request.form.get("price", 0))
+        price_str = request.form.get("price", "").strip()
+        try:
+            price = float(price_str)
+        except ValueError:
+            flash("Price must be a number.", "danger")
+            return redirect(request.referrer or url_for("upload"))
+        
         address = request.form.get("address", "").strip()
         proof = request.form.get("proof")
 

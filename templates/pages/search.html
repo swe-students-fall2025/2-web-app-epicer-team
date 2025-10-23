@@ -32,11 +32,11 @@
         <div class="d-flex flex-wrap gap-3 align-items-center">
           <label class="mb-0">Max budget $
             <input type="number" step="0.01" name="b" class="form-control d-inline-block w-auto"
-                  value="{{ request.args.get('b','') }}" style="width:110px;">
+                  value="{{ request.args.get('b','') }}" style="width:110px;" {% if lock_s and not lock_p %} disabled {% endif %}>
           </label>
           <label class="mb-0">Max distance (km)
             <input type="number" step="0.1" name="d" class="form-control d-inline-block w-auto"
-                  value="{{ request.args.get('d','') }}" style="width:130px;">
+                  value="{{ request.args.get('d','') }}" style="width:130px;" {% if lock_p and not lock_s %} disabled {% endif %}>
           </label>
         </div>
 
@@ -60,7 +60,7 @@
                     <div class="result-info">
                       <h5 class="mb-1">{{ item.get('name') }}</h5>
                       <div class="small text-muted">
-                        {{ item.get('address','Address unavailable') }} • {{ item.distances.get(user_id,'—') }} km
+                        {{ item.get('address','Address unavailable') }} • {{ item.distances.get(user_id) or'—' }} km
                       </div>
                     </div>
                   </a>
