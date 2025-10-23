@@ -66,3 +66,9 @@ Costco
 Organic Spinach
 Almond Store
 ```
+- **filter**: 
+To test our filter first search for:
+almond
+
+You should see an almond product and an almond store. 
+Now you can use the filter. 
