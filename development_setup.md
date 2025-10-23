@@ -35,3 +35,30 @@ Then go to http://127.0.0.1:5000 in your browser.
 - **Environment activation issues**: Make sure you're in the project root directory
 - **Permission issues**: You may need to run setup commands with `sudo` on Linux/macOS
 - **Port conflicts**: If port 5000 is in use, set `FLASK_PORT` in your `.env` file to a different port
+
+## Inside the app
+
+- **login**: please use the following login. We were unable to integrate an actual map api so we have preset locations for users. If you register your own account, actual address will not be properly used. 
+```
+username:
+Test_User
+email:
+test@example.com
+password:
+SecretTest1
+```
+- **search**: 
+The products you can search for are the following
+```
+Organic Spinach
+Organic Bananas
+Almond Milk
+Free-Range Eggs
+Coffee
+```
+The stores you can search for are the following
+```
+Trader Joe's
+Whole Foods Market
+Costco
+Organic Spinach
