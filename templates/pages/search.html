@@ -21,10 +21,10 @@
         <div class="filter-left mt-2">
           <strong>Include:</strong>
           <label class="ms-2">
-            <input type="checkbox" name="s" {% if request.args.get('s') or not request.args %}checked{% endif %}> Stores
+            <input type="checkbox" name="s" value='on' {% if request.args.get('s')%}checked{% endif %}> Stores
           </label>
           <label class="ms-2">
-            <input type="checkbox" name="p" {% if request.args.get('p') or not request.args %}checked{% endif %}> Products
+            <input type="checkbox" name="p" value='on' {% if request.args.get('p')%}checked{% endif %}> Products
           </label>
         </div>
 

@@ -359,16 +359,13 @@ def create_app():
                 result = [r for r in result if (r["type"] == "product") and (r.get("price", float("inf")) <= budget)] 
             if user_id is not None and distance is not None:
                 store_distance = {
-                    s["name"]: (
-                        s.get("distances", {}).get(user_id, float("inf"))
-                        if s.get("distances", {}).get(user_id) is not None
-                        else float("inf")
-                        ) for s in db.stores.find({}, {"_id": 0, "name": 1, "distances": 1})
+                    s["name"]: s['distances'].get(user_id, float("inf")) for s in db.stores.find({}, {"_id": 0, "name": 1, "distances": 1})
                 }
                 result = [
-                    r for r in result
-                    if r.get("type") == "store"
-                    and store_distance.get(r["name"], float("inf")) <= distance
+                    r for r in result if (
+                        r['distances'].get(user_id, float("inf")) < distance
+                        or store_distance.get(r.get("store"), float("inf")) < distance
+                    )
                 ]
             seen = set()
             unique = []
@@ -432,9 +429,11 @@ def create_app():
             geolocator = Nominatim(user_agent='store_locator')
             location = geolocator.geocode(address)
             if location is None:
+                print("Hit none")
                 flash("Could not find store address. Please check store address again.")
                 return render_template("pages/upload.html", product = product, store = store, address = address)
         except:
+            print("Hit error")
             flash("Could not find store address. Please check store address again.")
             return render_template("pages/upload.html", product = product, store = store, address = address)
 
