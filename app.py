@@ -18,28 +18,32 @@ MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
 
 def recalculate_distance(stores, db, user_id, user_lat, user_long):
+    print("Running recalculate_distance!")
     for store in stores:
         store_lat = store.get("store_lat")
         store_long = store.get("store_long")
-        if store_lat is not None and store_long is not None:
-            distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
-        else:
+        if store_lat is None or store_long is None:
             try:
                 geolocator = Nominatim(user_agent='store_locator')
                 location = geolocator.geocode(store['address'])
                 if location is not None:
                     store_lat = location.latitude 
                     store_long  = location.longitude
-                    distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
                 else:
-                    store_lat = store_long = distance = None
+                    store_lat = store_long = None
             except:
-                store_lat = store_long = distance = None
+                store_lat = store_long = None
+        
+        if user_lat is None or user_long is None:
+            distance = None
+        else:
+            distance = geodesic((user_lat, user_long), (store_lat, store_long)).kilometers
 
-            db.stores.update_one(
-                {"_id": store["_id"]},
-                {"$set": {"store_lat": store_lat, "store_long":store_long}}
-            )
+
+        db.stores.update_one(
+            {"_id": store["_id"]},
+            {"$set": {"store_lat": store_lat, "store_long":store_long}}
+        )
 
         db.stores.update_one(
             {"_id": store["_id"]},
@@ -137,9 +141,7 @@ def create_app():
                     user_long = location.longitude
                 except:
                     user_lat = user_long =  location = None
-                    flash("Could not get location, try again later!")
             else:
-                flash("Warning: distance features cannot work without location!")
                 user_lat = user_long =  location = None
         
             new_user = ({
@@ -159,7 +161,6 @@ def create_app():
 
             stores = db.stores.find()
             recalculate_distance(stores, db, user_id, user_lat, user_long)
-
             return redirect(url_for("search"))
         return render_template("pages/register.html")
     
@@ -181,8 +182,9 @@ def create_app():
                 location = geolocator.geocode(address)
                 user_lat = location.latitude
                 user_long = location.longitude
+                flash("Home Address successfully found!")
             except:
-                flash("Could not find that address. Please enter address again.")
+                flash("Could not find current home address. Please check home address.")
                 user_lat = user_long = None
 
             user_id = current_user.id
@@ -206,11 +208,17 @@ def create_app():
     @app.route("/delete_profile", methods = ["POST"])
     @login_required
     def delete_profile():
+        print("Deleting...")
         user_id = current_user.id
-        stores = db.stores.find()
-        for store in stores:
-            del store['distances'][user_id]
-        db.users.delete_one({"_id": ObjectId(current_user.id)})
+        for store in db.stores.find({}, {"_id":1}):
+            db.stores.update_one(
+                {"_id": store["_id"]},
+                {"$unset": {f"distances.{user_id}": ""}}
+            )
+        db.ratings.delete_many({"user_id":ObjectId(user_id)})
+        db.users.delete_one({"_id": str(user_id)})
+
+        print(f"Deleted {user_id}")
         logout_user()
         return redirect(url_for("show_home"))
 
@@ -377,9 +385,12 @@ def create_app():
 
             return render_template("pages/search.html", query = query, result = result, user_id=user_id)
         # On first render, did not query yet
+        if user_id is None:
+            flash("Login to get distance information.")
+        elif current_user.user_lat is None or current_user.user_long is None:
+            flash("Could not get location information to get distance, please edit location in profile!")
         return render_template("pages/search.html", query = None, result = None)
     
-    # something's wrong with this one I still need to figure it out
     @app.route("/upload",  methods = ["GET", "POST"]) 
     @login_required
     def upload():
@@ -414,10 +425,10 @@ def create_app():
             geolocator = Nominatim(user_agent='store_locator')
             location = geolocator.geocode(address)
             if location is None:
-                error = "Could not find that address. Please enter address again."
-                return render_template("pages/upload.html", product = product, store = store, address = address, error=error)
+                flash("Could not find store address. Please check store address again.")
+                return render_template("pages/upload.html", product = product, store = store, address = address)
         except:
-            flash("Could not find that address. Please enter address again.")
+            flash("Could not find store address. Please check store address again.")
             return render_template("pages/upload.html", product = product, store = store, address = address)
 
 

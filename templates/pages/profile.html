@@ -55,7 +55,16 @@
         <!-- Action Buttons -->
         <div class="store-list-section">
           <h3 class="store-list-title">Account Actions</h3>
-          
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {% for message in messages %}
+                  {{ message }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endif %}
+            {% endwith %}
           <div class="store-preview">
             <div class="store-item">
               <a href="{{ url_for('edit_profile') }}">
