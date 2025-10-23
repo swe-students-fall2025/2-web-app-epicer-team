@@ -67,6 +67,15 @@
                             <div class="store-price">${{ '%.2f'|format(products[0].get('price', 0)) }}</div>
                         </div>
                         </a>
+                        <div class="update-price-tab">
+                        <form action="{{ url_for('upload') if current_user.is_authenticated else url_for('login') }}" method="get" class="d-inline">
+                            <input type="hidden" name="product_id" value="{{ products[0]._id }}">
+                            <input type="hidden" name="sid" value="{{ sid }}">
+                            <button type="submit" class="update-price-btn btn btn-outline-primary">
+                                Update Price
+                            </button>
+                        </form>
+                        </div>
                     </div>
                     </div>
 
@@ -74,7 +83,7 @@
                     <div class="store-list-collapsible" id="productListCollapsible">
                     {% for p in products[1:] %}
                         <div class="store-item">
-                        <a href="{{ url_for('store_product', product_id=products[0]._id, sid=sid) }}">
+                        <a href="{{ url_for('store_product', product_id=p._id, sid=sid) }}">
                             <div class="store-info">
                             <h4>{{ p.name }}</h4>
                             <div class="store-price">
@@ -82,6 +91,15 @@
                             </div>
                             </div>
                         </a>
+                        <div class="update-price-tab">
+                            <form action="{{ url_for('upload') if current_user.is_authenticated else url_for('login') }}" method="get" class="d-inline">
+                            <input type="hidden" name="product_id" value="{{ p._id }}">
+                            <input type="hidden" name="sid" value="{{ sid }}">
+                            <button type="submit" class="update-price-btn btn btn-outline-primary">
+                            Update Price
+                            </button>
+                            </form>
+                        </div>
                         </div>
                     {% endfor %}
                     </div>
