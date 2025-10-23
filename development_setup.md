@@ -1,4 +1,4 @@
-# SETUP INSTRUCTIONS FOR DEVELOPMENT
+# SETUP INSTRUCTIONS
 
 1. **Clone the repository and navigate to the project root**
 
@@ -38,7 +38,7 @@ Then go to http://127.0.0.1:5000 in your browser.
 
 ## Inside the app
 
-- **login**: please use the following login. We were unable to integrate an actual map api so we have preset locations for users. If you register your own account, actual address will not be properly used. 
+- **login**: please use the following login with a preset location.
 ```
 username:
 Test_User
@@ -47,6 +47,8 @@ test@example.com
 password:
 SecretTest1
 ```
+ Optionally, if you register your own account, you can set your location during registration, but please do make sure it is a real address to take advantage of the distance features. Additionally, please do not change your location too rapidly so as not to abuse the map api endpoint.
+ 
 - **search**: 
 The products you can search for are the following
 ```
@@ -62,3 +64,5 @@ Trader Joe's
 Whole Foods Market
 Costco
 Organic Spinach
+Almond Store
+```
